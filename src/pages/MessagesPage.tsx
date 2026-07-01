@@ -1181,7 +1181,7 @@ export const MessagesPage: React.FC = () => {
               <div
                 ref={chatLogContainerRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto p-4.5 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-800 bg-gray-50/10 dark:bg-slate-950/10"
+                className="flex-1 min-h-0 overflow-y-auto p-4.5 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-800 bg-gray-50/10 dark:bg-slate-950/10"
               >
                 {isLoadingMessages ? (
                   <div className="flex flex-col items-center justify-center h-full">
@@ -1351,7 +1351,7 @@ export const MessagesPage: React.FC = () => {
 
               {/* Message Composer Footer */}
               {activeChat.status !== 'request' && (
-                <div className="p-3 bg-white/70 dark:bg-slate-900/80 backdrop-blur-md border-t border-gray-150 dark:border-slate-800/80 z-10 flex flex-col gap-2">
+                <div className="p-3 bg-white/70 dark:bg-slate-900/80 backdrop-blur-md border-t border-gray-150 dark:border-slate-800/80 z-10 flex flex-col gap-2 shrink-0">
                   
                   {replyingTo && (
                     <div className="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-indigo-50/50 dark:bg-slate-850 text-xs border border-indigo-150/20">
