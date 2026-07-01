@@ -28,10 +28,13 @@ import { showToast } from '../components/ui/Toast';
 import { onNotificationsSnapshot } from '../services/notificationService';
 import { listenToChats } from '../services/messageService';
 import { OpenCommLogo } from '../components/common/OpenCommLogo';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
+import { Download } from 'lucide-react';
 
 export const AuthLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const { isSidebarOpen, toggleSidebar, setSidebarOpen } = useAppStore();
+  const { isInstallable, promptToInstall } = useInstallPrompt();
   const navigate = useNavigate();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -180,6 +183,16 @@ export const AuthLayout: React.FC = () => {
             </div>
           </div>
           
+          {isInstallable && (
+            <button
+              onClick={promptToInstall}
+              className="flex items-center gap-2 w-full px-3 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors shadow-sm"
+            >
+              <Download className="h-4 w-4" />
+              <span>Install OpenComm</span>
+            </button>
+          )}
+
           {/* Theme & Logout Toolbar */}
           <div className="flex items-center justify-between px-2">
             <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Appearance</span>

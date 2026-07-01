@@ -10,6 +10,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from './components/ui/Toast';
 import { AppRoutes } from './routes';
+import { PWAReloadPrompt } from './components/PWAReloadPrompt';
 
 export default function App() {
   return (
@@ -22,6 +23,9 @@ export default function App() {
             
             {/* Central routing map */}
             <AppRoutes />
+
+            {/* PWA Update Prompt */}
+            <PWAReloadPrompt />
           </BrowserRouter>
         </AuthProvider>
       </ThemeProvider>

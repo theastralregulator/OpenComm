@@ -99,6 +99,9 @@ export const SettingsPage: React.FC = () => {
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>(
     (localStorage.getItem('opencomm_font_size') as any) || 'medium'
   );
+  const [isPushEnabled, setIsPushEnabled] = useState(
+    'Notification' in window && Notification.permission === 'granted'
+  );
   const [animationsEnabled, setAnimationsEnabled] = useState<'on' | 'off' | 'reduce'>(
     (localStorage.getItem('opencomm_animations') as any) || 'on'
   );
@@ -115,6 +118,29 @@ export const SettingsPage: React.FC = () => {
       showToast.error(`Failed to update ${fieldName}: ${err.message}`);
     } finally {
       setSavingField(null);
+    }
+  };
+
+  const togglePushNotifications = async () => {
+    if (!('Notification' in window)) {
+      showToast.error('Push notifications are not supported in this browser.');
+      return;
+    }
+    
+    if (isPushEnabled) {
+      showToast.info('Push notifications are managed at the browser/OS level. You must disable them in your site settings.');
+    } else {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          setIsPushEnabled(true);
+          showToast.success('Push notifications enabled!');
+        } else {
+          showToast.error('Notification permission denied.');
+        }
+      } catch (e) {
+        showToast.error('Error requesting notification permission.');
+      }
     }
   };
 
@@ -668,6 +694,31 @@ export const SettingsPage: React.FC = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4 text-left">
+                  {/* Push Notifications Toggle */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-slate-800 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                        <Bell className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Push Notifications (PWA)</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Receive native alerts for messages and mentions</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={togglePushNotifications}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        isPushEnabled ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-slate-700'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          isPushEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
                   {/* Likes Switch */}
                   <div className="flex items-center justify-between p-3 bg-gray-50/50 dark:bg-slate-950/50 border border-gray-100 dark:border-slate-800 rounded-xl">
                     <div>
