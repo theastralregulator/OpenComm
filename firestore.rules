@@ -139,7 +139,10 @@ service cloud.firestore {
           )
           && incoming().get('uid', '') == existing().get('uid', '') // immutable uid
           && incoming().get('createdAt', '') == existing().get('createdAt', '') // immutable createdAt
-        ) || isAdmin()
+        ) || isAdmin() || (
+          isSignedIn() &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['followersCount', 'followingCount', 'followerCount'])
+        )
       );
         
       allow delete: if isOwner(userId) || isAdmin();

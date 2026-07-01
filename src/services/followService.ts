@@ -102,7 +102,7 @@ export async function followUser(follower: UserProfile, following: UserProfile):
         recipientId: following.uid,
         senderId: follower.uid,
         senderName: follower.displayName || follower.fullName || 'Someone',
-        senderPhotoURL: follower.photoURL,
+        senderPhotoURL: safePhotoURL(follower.photoURL),
         type: status === 'pending' ? 'follow_request' : 'follow',
         message: status === 'pending' ? 'sent you a follow request.' : 'started following you.',
         link: `/profile/${follower.username}`
@@ -289,11 +289,14 @@ export async function acceptFollowRequest(followerId: string, followingId: strin
       const followingSnap = await getDoc(followingRef);
       const followingProfile = followingSnap.data() as UserProfile;
 
+      const safePhotoURL = (url?: string) =>
+        !url || url.startsWith('data:') ? '' : url.slice(0, 2048);
+
       await createNotification({
         recipientId: followerId,
         senderId: followingId,
         senderName: followingProfile.displayName || followingProfile.fullName || 'Someone',
-        senderPhotoURL: followingProfile.photoURL,
+        senderPhotoURL: safePhotoURL(followingProfile.photoURL),
         type: 'follow_accept',
         message: 'accepted your follow request.',
         link: `/profile/${followingProfile.username}`

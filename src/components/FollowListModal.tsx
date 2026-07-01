@@ -121,18 +121,11 @@ const FollowUserCard: React.FC<{
     try {
       if (weFollowStatus === 'accepted' || weFollowStatus === 'pending') {
         await unfollowUser(currentUserId, peerId);
-        showToast.info(`Unfollowed @${peerProfile.username}`);
       } else {
         await followUser(currentUserProfile, peerProfile);
-        if (peerProfile.isProfilePublic === false) {
-          showToast.success(`Request sent to @${peerProfile.username}`);
-        } else {
-          showToast.success(`Following @${peerProfile.username}`);
-        }
       }
     } catch (err) {
-      console.error(err);
-      showToast.error('Failed to update follow status');
+      console.error('Follow modal error:', err);
     }
   };
 

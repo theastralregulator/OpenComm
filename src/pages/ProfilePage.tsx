@@ -149,21 +149,14 @@ export const ProfilePage: React.FC = () => {
       if (currentStatus === 'accepted' || currentStatus === 'pending') {
         setFollowStatus('none'); // optimistic update
         await unfollowUser(user.uid, profile.uid);
-        showToast.info(`You unfollowed @${profile.username}`);
       } else {
         const newStatus = profile.isProfilePublic === false ? 'pending' : 'accepted';
         setFollowStatus(newStatus); // optimistic update
         await followUser(user, profile);
-        if (newStatus === 'pending') {
-          showToast.success(`Follow request sent to @${profile.username}`);
-        } else {
-          showToast.success(`You are now following @${profile.username}`);
-        }
       }
     } catch (err) {
-      console.error(err);
-      showToast.error('Failed to update follow status.');
-      setFollowStatus(currentStatus); // revert on failure
+      console.error('Follow toggle error:', err);
+      setFollowStatus(currentStatus); // revert on failure silently
     }
   };
 

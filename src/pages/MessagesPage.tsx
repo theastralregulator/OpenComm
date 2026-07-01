@@ -435,17 +435,18 @@ export const MessagesPage: React.FC = () => {
     const currentlyFollowing = followingStatusMap[peer.uid];
     try {
       if (currentlyFollowing) {
-        await unfollowUser(currentUser.uid, peer.uid);
+        // Optimistic update
         setFollowingStatusMap(prev => ({ ...prev, [peer.uid]: false }));
-        showToast.success(`Unfollowed @${peer.username}`);
+        await unfollowUser(currentUser.uid, peer.uid);
       } else {
-        await followUser(currentUser, peer);
+        // Optimistic update
         setFollowingStatusMap(prev => ({ ...prev, [peer.uid]: true }));
-        showToast.success(`Following @${peer.username}`);
+        await followUser(currentUser, peer);
       }
     } catch (e) {
       console.error(e);
-      showToast.error('Unable to update follow relation.');
+      // Revert silently
+      setFollowingStatusMap(prev => ({ ...prev, [peer.uid]: currentlyFollowing }));
     }
   };
 
