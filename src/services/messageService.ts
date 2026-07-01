@@ -514,7 +514,11 @@ export function listenToChats(userId: string, callback: (chats: DirectChat[]) =>
         }
       });
       // Sort client-side to avoid needing a composite index in Firestore
-      chats.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      chats.sort((a, b) => {
+        const timeA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+        const timeB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+        return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+      });
       
       callback(chats);
     }, (error) => {
