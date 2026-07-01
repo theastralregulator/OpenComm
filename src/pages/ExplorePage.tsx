@@ -169,11 +169,18 @@ export const ExplorePage: React.FC = () => {
 
     try {
       if (isFollowing || isPending) {
-        // Unfollow
+        // Optimistic update
+        setFollowingIds(prev => { const s = new Set(prev); s.delete(targetId); return s; });
+        setPendingIds(prev => { const s = new Set(prev); s.delete(targetId); return s; });
         await unfollowUser(currentUser.uid, targetId);
         showToast.info(`You unfollowed @${targetUser.username}`);
       } else {
-        // Follow
+        // Optimistic update
+        if (targetUser.isProfilePublic === false) {
+          setPendingIds(prev => new Set(prev).add(targetId));
+        } else {
+          setFollowingIds(prev => new Set(prev).add(targetId));
+        }
         await followUser(currentUser, targetUser);
         if (targetUser.isProfilePublic === false) {
           showToast.success(`Follow request sent to @${targetUser.username}`);
@@ -183,7 +190,14 @@ export const ExplorePage: React.FC = () => {
       }
     } catch (err) {
       console.error('Error toggling follow:', err);
-      showToast.error('Failed to update follow status.');
+      // Revert optimistic update silently
+      if (isFollowing || isPending) {
+        if (isFollowing) setFollowingIds(prev => new Set(prev).add(targetId));
+        if (isPending) setPendingIds(prev => new Set(prev).add(targetId));
+      } else {
+        setFollowingIds(prev => { const s = new Set(prev); s.delete(targetId); return s; });
+        setPendingIds(prev => { const s = new Set(prev); s.delete(targetId); return s; });
+      }
     }
   };
 

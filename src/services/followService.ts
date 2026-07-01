@@ -47,16 +47,21 @@ export async function followUser(follower: UserProfile, following: UserProfile):
   const status = following.isProfilePublic === false ? 'pending' : 'accepted';
   const timestamp = new Date().toISOString();
 
+  // Strip base64 data URLs — Firestore has doc size limits and rules cap URL length.
+  // The UI loads photos from UserProfile directly, not from FollowRelation.
+  const safePhotoURL = (url?: string) =>
+    !url || url.startsWith('data:') ? '' : url.slice(0, 2048);
+
   const relation: FollowRelation = {
     followId,
     followerId: follower.uid,
     followerUsername: follower.username || '',
     followerDisplayName: follower.displayName || follower.fullName || '',
-    followerPhotoURL: follower.photoURL || '',
+    followerPhotoURL: safePhotoURL(follower.photoURL),
     followingId: following.uid,
     followingUsername: following.username || '',
     followingDisplayName: following.displayName || following.fullName || '',
-    followingPhotoURL: following.photoURL || '',
+    followingPhotoURL: safePhotoURL(following.photoURL),
     status,
     createdAt: timestamp
   };

@@ -104,21 +104,10 @@ service cloud.firestore {
         && data.get('followId', null).size() <= 256
         && data.get('followerId', null) is string
         && data.get('followerId', null).size() <= 128
-        && data.get('followerUsername', null) is string
-        && data.get('followerUsername', null).size() <= 100
-        && data.get('followerDisplayName', null) is string
-        && data.get('followerDisplayName', null).size() <= 100
-        && (data.get('followerPhotoURL', null) == null || (data.get('followerPhotoURL', null) is string && data.get('followerPhotoURL', null).size() <= 2048))
         && data.get('followingId', null) is string
         && data.get('followingId', null).size() <= 128
-        && data.get('followingUsername', null) is string
-        && data.get('followingUsername', null).size() <= 100
-        && data.get('followingDisplayName', null) is string
-        && data.get('followingDisplayName', null).size() <= 100
-        && (data.get('followingPhotoURL', null) == null || (data.get('followingPhotoURL', null) is string && data.get('followingPhotoURL', null).size() <= 2048))
         && (data.get('status', null) == 'pending' || data.get('status', null) == 'accepted')
-        && data.get('createdAt', null) is string
-        && data.get('createdAt', null).size() <= 50;
+        && data.get('createdAt', null) is string;
     }
 
     match /users/{userId} {
