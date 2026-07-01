@@ -356,6 +356,28 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
+            {/* Profile Statistics bar */}
+            <div className="grid grid-cols-3 gap-4 border-y border-gray-100/70 dark:border-slate-800/80 py-4 text-center">
+              <div className="p-1.5">
+                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.postCount !== undefined ? profile.postCount : (profile.postsCount || 0)}</p>
+                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Posts</p>
+              </div>
+              <button 
+                onClick={() => setActiveFollowModal('followers')} 
+                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 p-1.5 rounded-xl transition-colors duration-200 outline-none"
+              >
+                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.followerCount !== undefined ? profile.followerCount : (profile.followersCount || 0)}</p>
+                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Followers</p>
+              </button>
+              <button 
+                onClick={() => setActiveFollowModal('following')} 
+                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 p-1.5 rounded-xl transition-colors duration-200 outline-none"
+              >
+                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.followingCount || 0}</p>
+                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Following</p>
+              </button>
+            </div>
+
             {/* Bio section */}
             <div className="text-left">
               <p className="font-semibold text-xs text-gray-400 dark:text-slate-500 uppercase tracking-widest font-mono mb-2">Biography</p>
@@ -463,6 +485,9 @@ import {
   movePost
 } from '../services/savedPostsService';
 
+import { PostModal } from '../components/PostModal';
+import { Post } from '../types';
+
 interface ProfileTabsSectionProps {
   profile: UserProfile;
   isOwnProfile: boolean;
@@ -488,6 +513,15 @@ const ProfileTabsSection: React.FC<ProfileTabsSectionProps> = ({ profile, isOwnP
 
   // Active Move dropdown for a saved post ID
   const [activeMovePostId, setActiveMovePostId] = useState<string | null>(null);
+  const [activePostForView, setActivePostForView] = useState<Post | null>(null);
+
+  const formatPostTime = (isoString: string) => {
+    try {
+      return new Date(isoString).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch {
+      return 'Some time ago';
+    }
+  };
 
   // Subscribe to User Posts
   useEffect(() => {
@@ -661,7 +695,11 @@ const ProfileTabsSection: React.FC<ProfileTabsSectionProps> = ({ profile, isOwnP
             </div>
           ) : (
             userPosts.map((post) => (
-              <Card key={post.postId} className="border border-gray-150 dark:border-slate-800/80 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+              <Card 
+                key={post.postId} 
+                className="border border-gray-150 dark:border-slate-800/80 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer"
+                onClick={() => setActivePostForView(post as Post)}
+              >
                 <CardContent className="p-4 flex flex-col justify-between h-full text-left gap-3">
                   <div className="space-y-2">
                     {post.imageUrl && (
@@ -883,6 +921,15 @@ const ProfileTabsSection: React.FC<ProfileTabsSectionProps> = ({ profile, isOwnP
           </div>
         </div>
       )}
+
+      {/* Full View Post Modal */}
+      <PostModal 
+        isOpen={activePostForView !== null}
+        post={activePostForView}
+        onClose={() => setActivePostForView(null)}
+        user={profile}
+        formatPostTime={formatPostTime}
+      />
     </div>
   );
 };

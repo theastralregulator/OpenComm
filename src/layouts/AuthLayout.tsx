@@ -63,8 +63,8 @@ export const AuthLayout: React.FC = () => {
     { name: 'Explore', path: '/explore', icon: <Compass className="h-5 w-5" /> },
     { name: 'Rooms', path: '/rooms', icon: <Users className="h-5 w-5" /> },
     { name: 'Messages', path: '/messages', icon: <Mail className="h-5 w-5" /> },
-    { name: 'Profile', path: `/profile/${username}`, icon: <User className="h-5 w-5" /> },
     { name: 'Notifications', path: '/notifications', icon: <Bell className="h-5 w-5" />, badge: unreadCount > 0 ? unreadCount : undefined },
+    { name: 'Profile', path: `/profile/${username}`, icon: <User className="h-5 w-5" /> },
     { name: 'Settings', path: '/settings', icon: <Settings className="h-5 w-5" /> },
   ];
 
@@ -228,7 +228,7 @@ export const AuthLayout: React.FC = () => {
             
             {/* Mobile-Only Logo */}
             <NavLink to="/feed" className="flex lg:hidden hover:opacity-95 transition-opacity">
-              <img src="/favicon.png" alt="OpenComm Logo" className="w-9 h-9 object-contain" />
+              <OpenCommLogo iconSize={36} />
             </NavLink>
           </div>
 
@@ -284,7 +284,7 @@ export const AuthLayout: React.FC = () => {
       {/* Floating Glassmorphic Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto">
         <nav className="flex items-center justify-around px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border border-gray-100/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-gray-200/40 dark:shadow-black/40">
-          {navItems.slice(0, 5).map((item) => (
+          {[navItems[0], navItems[1], navItems[2], navItems[3], navItems[5]].map((item) => (
             <NavLink
               key={item.path}
               to={item.path}

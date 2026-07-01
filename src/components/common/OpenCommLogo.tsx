@@ -89,7 +89,7 @@ export const OpenCommLogo: React.FC<LogoProps> = ({
         <img
           src={wordmarkSrc}
           alt="OpenComm Wordmark"
-          className="hidden sm:block h-8 sm:h-9 md:h-10 lg:h-[44px] w-auto object-contain select-none transition-opacity duration-300"
+          className="block h-7 sm:h-9 md:h-10 lg:h-[44px] w-auto object-contain select-none transition-opacity duration-300"
           loading="eager"
         />
       )}
