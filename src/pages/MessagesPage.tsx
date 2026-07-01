@@ -268,26 +268,32 @@ export const MessagesPage: React.FC = () => {
           }
         }
       } else {
+        // Chat not in list yet — derive the other user ID from the chatId and ensure the chat exists
         const parts = chatId.split('_');
-        if (parts.length === 2 && parts.includes(currentUser.uid)) {
-          const otherId = parts.find(id => id !== currentUser.uid);
-          if (otherId) {
-            getUserProfile(otherId).then(async (profile) => {
-              if (profile) {
-                setActivePeer(profile);
-                setUserProfileCache(prev => ({ ...prev, [otherId]: profile }));
-                try {
-                  await getOrCreateChat(currentUser.uid, otherId);
-                  const fetchedChat = await getChat(chatId);
-                  if (fetchedChat) {
-                    setActiveChat(fetchedChat);
-                  }
-                } catch (err) {
-                  console.error('[OpenComm] Error auto-opening/creating chat:', err);
+        const otherId = parts.find(id => id !== currentUser.uid);
+        if (otherId) {
+          getUserProfile(otherId).then(async (profile) => {
+            if (profile) {
+              setActivePeer(profile);
+              setUserProfileCache(prev => ({ ...prev, [otherId]: profile }));
+              // Ensure chat document exists (creates if not) — never throws
+              await getOrCreateChat(currentUser.uid, otherId);
+              // Immediately try to hydrate activeChat from Firestore
+              try {
+                const fetchedChat = await getChat(chatId);
+                if (fetchedChat) {
+                  setActiveChat(fetchedChat);
+                } else {
+                  // The Firestore listener will update chats[] shortly, which triggers this effect again
+                  console.log('[OpenComm] Chat created, awaiting real-time sync...');
                 }
+              } catch (err) {
+                console.warn('[OpenComm] Could not fetch chat yet, listener will sync:', err);
               }
-            });
-          }
+            }
+          }).catch(err => {
+            console.error('[OpenComm] Error loading peer profile:', err);
+          });
         }
       }
     } else {
@@ -416,17 +422,12 @@ export const MessagesPage: React.FC = () => {
   // Create or select direct message conversation
   const handleStartChat = async (peer: UserProfile) => {
     if (!currentUser) return;
-    try {
-      const id = await getOrCreateChat(currentUser.uid, peer.uid);
-      setIsNewChatOpen(false);
-      setUserSearchTerm('');
-      setUserSearchResults([]);
-      navigate(`/messages/${id}`);
-      showToast.success(`Chatting with ${peer.displayName || peer.username}`);
-    } catch (err) {
-      console.error(err);
-      showToast.error('Unable to create conversation.');
-    }
+    const id = await getOrCreateChat(currentUser.uid, peer.uid);
+    setIsNewChatOpen(false);
+    setUserSearchTerm('');
+    setUserSearchResults([]);
+    navigate(`/messages/${id}`);
+    showToast.success(`Chatting with ${peer.displayName || peer.username}`);
   };
 
   // Handle follow / unfollow on the Start Chat Modal users

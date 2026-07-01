@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfileByUsername } from '../services/authService';
-import { followUser, unfollowUser } from '../services/followService';
+import { followUser, unfollowUser, getFollowStatus, onFollowsSnapshot } from '../services/followService';
 import { db, isFirebaseConfigured } from '../services/firebase/config';
 import { doc, onSnapshot, query, collection, where, orderBy } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
@@ -48,6 +48,8 @@ export const ProfilePage: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>('none');
   const [activeFollowModal, setActiveFollowModal] = useState<'followers' | 'following' | null>(null);
+  const [realFollowersCount, setRealFollowersCount] = useState<number>(0);
+  const [realFollowingCount, setRealFollowingCount] = useState<number>(0);
 
   const isOwnProfile = !username || username.toLowerCase() === user?.username?.toLowerCase() || username === 'me';
 
@@ -123,15 +125,36 @@ export const ProfilePage: React.FC = () => {
     }
   }, [profile?.uid]);
 
+  // Real-time listeners for exact follower/following counts based on follows collection
+  useEffect(() => {
+    if (!profile?.uid) return;
+    
+    const unsubFollowers = onFollowsSnapshot(profile.uid, 'followers', (list) => {
+      setRealFollowersCount(list.length);
+    });
+    const unsubFollowing = onFollowsSnapshot(profile.uid, 'following', (list) => {
+      setRealFollowingCount(list.length);
+    });
+
+    return () => {
+      unsubFollowers();
+      unsubFollowing();
+    };
+  }, [profile?.uid]);
+
   const handleFollowToggle = async () => {
     if (!user || !profile) return;
+    const currentStatus = followStatus;
     try {
-      if (followStatus === 'accepted' || followStatus === 'pending') {
+      if (currentStatus === 'accepted' || currentStatus === 'pending') {
+        setFollowStatus('none'); // optimistic update
         await unfollowUser(user.uid, profile.uid);
         showToast.info(`You unfollowed @${profile.username}`);
       } else {
+        const newStatus = profile.isProfilePublic === false ? 'pending' : 'accepted';
+        setFollowStatus(newStatus); // optimistic update
         await followUser(user, profile);
-        if (profile.isProfilePublic === false) {
+        if (newStatus === 'pending') {
           showToast.success(`Follow request sent to @${profile.username}`);
         } else {
           showToast.success(`You are now following @${profile.username}`);
@@ -140,6 +163,7 @@ export const ProfilePage: React.FC = () => {
     } catch (err) {
       console.error(err);
       showToast.error('Failed to update follow status.');
+      setFollowStatus(currentStatus); // revert on failure
     }
   };
 
@@ -289,14 +313,8 @@ export const ProfilePage: React.FC = () => {
                       size="sm"
                       onClick={async () => {
                         if (!user?.uid || !profile?.uid) return;
-                        try {
-                          showToast.info(`Initiating secure connection with @${profile.username}...`);
-                          const chatId = await getOrCreateChat(user.uid, profile.uid);
-                          navigate(`/messages/${chatId}`);
-                        } catch (err) {
-                          console.error(err);
-                          showToast.error('Unable to open conversation.');
-                        }
+                        const chatId = await getOrCreateChat(user.uid, profile.uid);
+                        navigate(`/messages/${chatId}`);
                       }}
                       className="p-2 min-w-0"
                     >
@@ -366,14 +384,14 @@ export const ProfilePage: React.FC = () => {
                 onClick={() => setActiveFollowModal('followers')} 
                 className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 p-1.5 rounded-xl transition-colors duration-200 outline-none"
               >
-                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.followerCount !== undefined ? profile.followerCount : (profile.followersCount || 0)}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{realFollowersCount}</p>
                 <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Followers</p>
               </button>
               <button 
                 onClick={() => setActiveFollowModal('following')} 
                 className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 p-1.5 rounded-xl transition-colors duration-200 outline-none"
               >
-                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.followingCount || 0}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{realFollowingCount}</p>
                 <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Following</p>
               </button>
             </div>
