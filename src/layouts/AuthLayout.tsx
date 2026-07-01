@@ -40,6 +40,8 @@ export const AuthLayout: React.FC = () => {
   const [unreadCount, setUnreadCount] = React.useState(0);
   const [unreadChatsCount, setUnreadChatsCount] = React.useState(0);
 
+  const isDeepChatPage = location.pathname.startsWith('/messages/') && location.pathname !== '/messages';
+
   React.useEffect(() => {
     if (!user) return;
     const unsubscribeNotifications = onNotificationsSnapshot(
@@ -298,7 +300,7 @@ export const AuthLayout: React.FC = () => {
         </header>
 
         {/* Scrollable View Panel */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-bg-light dark:bg-bg-dark pb-24 lg:pb-8 flex flex-col min-h-0 relative">
+        <main className={`flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-bg-light dark:bg-bg-dark flex flex-col min-h-0 relative ${isDeepChatPage ? 'pb-4 lg:pb-8' : 'pb-24 lg:pb-8'}`}>
           <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative">
             <Outlet />
           </div>
@@ -306,8 +308,9 @@ export const AuthLayout: React.FC = () => {
       </div>
 
       {/* Floating Glassmorphic Mobile Bottom Navigation */}
-      <div className="mobile-bottom-nav lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto transition-opacity duration-200">
-        <nav className="flex items-center justify-around px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border border-gray-100/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-gray-200/40 dark:shadow-black/40">
+      {!isDeepChatPage && (
+        <div className="mobile-bottom-nav lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto transition-opacity duration-200">
+          <nav className="flex items-center justify-around px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border border-gray-100/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-gray-200/40 dark:shadow-black/40">
           {[navItems[0], navItems[1], navItems[2], navItems[3], navItems[5]].map((item) => (
             <NavLink
               key={item.path}
@@ -329,6 +332,7 @@ export const AuthLayout: React.FC = () => {
           ))}
         </nav>
       </div>
+      )}
     </div>
   );
 };
