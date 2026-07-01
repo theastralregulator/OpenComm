@@ -46,6 +46,10 @@ export interface UserProfile {
   notifRooms?: boolean;
   notifAnnouncements?: boolean;
   themePreference?: 'light' | 'dark';
+  language?: string;
+  country?: string;
+  state?: string;
+  city?: string;
 }
 
 export interface AuthState {
@@ -112,6 +116,14 @@ export interface Room {
   updatedAt: string;
   membersCount: number;
   pinnedMessages?: string[];
+  announcements?: any[];
+  language?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  tags?: string[];
+  bannedUsers?: string[];
+  rules?: string[];
 }
 
 export interface RoomMember {

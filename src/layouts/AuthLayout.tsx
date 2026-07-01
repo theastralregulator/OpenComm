@@ -228,7 +228,7 @@ export const AuthLayout: React.FC = () => {
             
             {/* Mobile-Only Logo */}
             <NavLink to="/feed" className="flex lg:hidden hover:opacity-95 transition-opacity">
-              <OpenCommLogo iconSize={36} />
+              <OpenCommLogo iconSize={36} showIcon={false} />
             </NavLink>
           </div>
 

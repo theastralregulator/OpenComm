@@ -64,7 +64,7 @@ export function mapFirestoreDocToPost(data: any): Post {
     commentCount,
     sharesCount,
     saveCount,
-    viewsCount: data.viewsCount !== undefined && data.viewsCount > 0 ? data.viewsCount : (likesCount > 0 ? Math.floor(likesCount * 3 + commentsCount * 2 + 1) : 0),
+    viewsCount: data.viewsCount || 0,
     isEdited: data.isEdited || false,
     createdAt: data.createdAt || new Date().toISOString(),
     updatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
