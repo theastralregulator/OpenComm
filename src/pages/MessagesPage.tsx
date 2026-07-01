@@ -284,11 +284,33 @@ export const MessagesPage: React.FC = () => {
                 if (fetchedChat) {
                   setActiveChat(fetchedChat);
                 } else {
-                  // The Firestore listener will update chats[] shortly, which triggers this effect again
-                  console.log('[OpenComm] Chat created, awaiting real-time sync...');
+                  // Provide optimistic active chat to prevent infinite loading
+                  setActiveChat({
+                    chatId,
+                    participants: [currentUser.uid, otherId],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    lastMessage: null,
+                    unreadCount: { [currentUser.uid]: 0, [otherId]: 0 },
+                    status: 'active',
+                    senderId: currentUser.uid,
+                    recipientId: otherId
+                  });
+                  console.log('[OpenComm] Chat created optimistically, awaiting real-time sync...');
                 }
               } catch (err) {
                 console.warn('[OpenComm] Could not fetch chat yet, listener will sync:', err);
+                setActiveChat({
+                  chatId,
+                  participants: [currentUser.uid, otherId],
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                  lastMessage: null,
+                  unreadCount: { [currentUser.uid]: 0, [otherId]: 0 },
+                  status: 'active',
+                  senderId: currentUser.uid,
+                  recipientId: otherId
+                });
               }
             }
           }).catch(err => {
