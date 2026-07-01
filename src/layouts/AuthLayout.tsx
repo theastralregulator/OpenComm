@@ -298,8 +298,8 @@ export const AuthLayout: React.FC = () => {
         </header>
 
         {/* Scrollable View Panel */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-bg-light dark:bg-bg-dark pb-24 lg:pb-8">
-          <div className="max-w-5xl mx-auto h-full">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-bg-light dark:bg-bg-dark pb-24 lg:pb-8 flex flex-col min-h-0 relative">
+          <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative">
             <Outlet />
           </div>
         </main>

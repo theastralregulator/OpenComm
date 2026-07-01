@@ -864,13 +864,13 @@ export const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col flex-1 h-full w-full relative">
-      <div className="grid grid-cols-12 flex-1 h-full min-h-0 bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800/80 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md transition-all">
+    <div className="flex flex-col flex-1 min-h-0 w-full relative">
+      <div className="grid grid-cols-12 flex-1 min-h-0 bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800/80 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md transition-all">
         
         {/* =======================================
             SECTION 1: CHAT LIST SIDEBAR
             ======================================= */}
-        <div className={`col-span-12 md:col-span-4 flex flex-col h-full border-r border-gray-150 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 ${
+        <div className={`col-span-12 md:col-span-4 flex flex-col min-h-0 border-r border-gray-150 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 ${
           chatId ? 'hidden md:flex' : 'flex'
         }`}>
           {/* Header */}
@@ -1064,7 +1064,7 @@ export const MessagesPage: React.FC = () => {
         {/* =======================================
             SECTION 2: CHAT WINDOW
             ======================================= */}
-        <div className={`col-span-12 md:col-span-8 lg:col-span-5 flex flex-col h-full bg-gray-50/10 dark:bg-slate-900/10 ${
+        <div className={`col-span-12 md:col-span-8 lg:col-span-5 flex flex-col min-h-0 bg-gray-50/10 dark:bg-slate-900/10 ${
           chatId ? 'flex' : 'hidden md:flex'
         }`}>
           {chatId && (!activeChat || !activePeer) ? (
@@ -1455,7 +1455,7 @@ export const MessagesPage: React.FC = () => {
         {/* =======================================
             SECTION 3: USER PROFILE INFORMATION PANEL (Desktop-Only)
             ======================================= */}
-        <div className="hidden lg:flex lg:col-span-3 border-l border-gray-150 dark:border-slate-800/80 bg-white dark:bg-slate-900 flex-col h-full overflow-y-auto">
+        <div className="hidden lg:flex lg:col-span-3 flex-col min-h-0 border-l border-gray-150 dark:border-slate-800/80 bg-white dark:bg-slate-900 overflow-y-auto">
           {activePeer ? (
             <div className="p-5 flex flex-col items-center text-center">
               <div className="relative mb-4 mt-2">
