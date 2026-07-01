@@ -427,7 +427,6 @@ export const MessagesPage: React.FC = () => {
     setUserSearchTerm('');
     setUserSearchResults([]);
     navigate(`/messages/${id}`);
-    showToast.success(`Chatting with ${peer.displayName || peer.username}`);
   };
 
   // Handle follow / unfollow on the Start Chat Modal users
@@ -1027,7 +1026,12 @@ export const MessagesPage: React.FC = () => {
         <div className={`col-span-12 md:col-span-8 lg:col-span-5 flex flex-col h-full bg-gray-50/10 dark:bg-slate-900/10 ${
           chatId ? 'flex' : 'hidden md:flex'
         }`}>
-          {activeChat && activePeer ? (
+          {chatId && (!activeChat || !activePeer) ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <Clock className="h-6 w-6 text-indigo-400 animate-spin mb-2" />
+              <span className="text-xs text-gray-400">Loading conversation...</span>
+            </div>
+          ) : activeChat && activePeer ? (
             <>
               {/* Header */}
               <div className="px-4.5 py-3 border-b border-gray-150 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/75 backdrop-blur-md flex items-center justify-between z-10">
