@@ -518,7 +518,6 @@ export const MessagesPage: React.FC = () => {
         attachment
       );
       scrollToBottom();
-      inputRef.current?.focus();
     } catch (err) {
       console.error(err);
       showToast.error('Failed to send message.');
@@ -1571,7 +1570,6 @@ export const MessagesPage: React.FC = () => {
               value={userSearchTerm}
               onChange={(e) => setUserSearchTerm(e.target.value)}
               className="w-full text-xs pl-10 pr-4 py-3 rounded-xl border border-gray-150 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-950 focus:border-indigo-500/50 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 text-gray-800 dark:text-slate-100"
-              autoFocus
             />
             {isSearchingUsers && (
               <div className="absolute right-3.5 top-3">
