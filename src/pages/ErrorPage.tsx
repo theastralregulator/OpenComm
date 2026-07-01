@@ -22,7 +22,7 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-visual-screen flex items-center justify-center p-6 bg-gray-50 dark:bg-slate-950">
       <div className="max-w-md w-full flex flex-col items-center text-center gap-6">
         <span className="text-8xl font-black text-gray-200 dark:text-slate-800 tracking-widest select-none font-mono">
           {statusCode}

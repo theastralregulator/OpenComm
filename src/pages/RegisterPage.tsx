@@ -110,7 +110,7 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="flex-1 min-h-visual-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
       <div className="w-full max-w-md">
         
         {/* Header Title */}

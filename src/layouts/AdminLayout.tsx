@@ -47,7 +47,7 @@ export const AdminLayout: React.FC = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark text-gray-900 dark:text-slate-100">
+      <div className="min-h-visual-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark text-gray-900 dark:text-slate-100">
         <div className="animate-pulse flex flex-col items-center gap-2">
           <div className="h-10 w-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
             <Shield className="h-5 w-5 animate-spin" />
@@ -103,7 +103,7 @@ export const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row font-sans selection:bg-indigo-500/30 selection:text-white">
+    <div className="min-h-visual-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row font-sans selection:bg-indigo-500/30 selection:text-white">
       {/* Dynamic Background Gradients */}
       <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-indigo-950/20 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-[20%] right-[10%] w-[400px] h-[400px] bg-purple-600/5 rounded-full blur-[120px] pointer-events-none" />
@@ -230,7 +230,7 @@ export const AdminLayout: React.FC = () => {
       </AnimatePresence>
 
       {/* DESKTOP SIDEBAR */}
-      <aside className="hidden lg:flex flex-col justify-between w-[290px] border-r border-slate-900 bg-slate-950 p-6 flex-shrink-0 h-screen sticky top-0 overflow-y-auto">
+      <aside className="hidden lg:flex flex-col justify-between w-[290px] border-r border-slate-900 bg-slate-950 p-6 flex-shrink-0 h-visual-screen sticky top-0 overflow-y-auto">
         <div className="flex flex-col gap-6">
           {/* Brand logo */}
           <div className="flex items-center gap-3 pl-1">
@@ -309,7 +309,7 @@ export const AdminLayout: React.FC = () => {
       </aside>
 
       {/* MAIN VIEW CONTROLLER PANEL */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 h-visual-screen overflow-hidden">
         {/* Sticky Glassmorphic Top Header */}
         <header className="hidden lg:flex h-16 bg-slate-950/40 backdrop-blur-md border-b border-slate-900/60 px-8 items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">

@@ -333,7 +333,7 @@ export const ProfileSetupPage: React.FC = () => {
   const charRemaining = 160 - watchBio.length;
 
   return (
-    <div className="flex-1 min-h-screen bg-gray-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center transition-colors duration-300">
+    <div className="flex-1 min-h-visual-screen bg-gray-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center transition-colors duration-300">
       <div className="w-full max-w-xl flex flex-col gap-6">
         
         {/* Onboarding Stepper Header */}

@@ -377,10 +377,27 @@ export const MessagesPage: React.FC = () => {
 
   // Scroll to bottom helper
   const scrollToBottom = () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
+
+  // Keep chat pinned to bottom during mobile keyboard opening/resizing
+  useEffect(() => {
+    const handleViewportResize = () => {
+      scrollToBottom();
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportResize);
+    }
+    
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportResize);
+      }
+    };
+  }, []);
 
   // Load more messages on scrolling up
   const handleScroll = () => {
@@ -847,8 +864,8 @@ export const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)] w-full relative">
-      <div className="grid grid-cols-12 h-full bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800/80 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md transition-all">
+    <div className="flex flex-col flex-1 h-full w-full relative">
+      <div className="grid grid-cols-12 flex-1 h-full min-h-0 bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800/80 rounded-2xl shadow-xl overflow-hidden backdrop-blur-md transition-all">
         
         {/* =======================================
             SECTION 1: CHAT LIST SIDEBAR

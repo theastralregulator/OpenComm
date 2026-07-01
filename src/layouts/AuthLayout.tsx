@@ -85,7 +85,7 @@ export const AuthLayout: React.FC = () => {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="min-h-screen flex bg-bg-light dark:bg-bg-dark text-gray-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="min-h-visual-screen flex bg-bg-light dark:bg-bg-dark text-gray-900 dark:text-slate-100 transition-colors duration-200">
       {/* Off-canvas mobile menu overlay */}
       {isSidebarOpen && (
         <div
@@ -97,7 +97,7 @@ export const AuthLayout: React.FC = () => {
       {/* Sidebar - Desktop and Mobile Drawer */}
       <aside
         id="desktop-sidebar"
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800/80 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:h-screen ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800/80 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:h-visual-screen ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -212,7 +212,7 @@ export const AuthLayout: React.FC = () => {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-visual-screen overflow-hidden">
         {/* Sticky Glassmorphic Top Header */}
         <header className="sticky top-0 z-40 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-800/80 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 transition-colors">
           <div className="flex items-center gap-3">
@@ -306,7 +306,7 @@ export const AuthLayout: React.FC = () => {
       </div>
 
       {/* Floating Glassmorphic Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto">
+      <div className="mobile-bottom-nav lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto transition-opacity duration-200">
         <nav className="flex items-center justify-around px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border border-gray-100/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-gray-200/40 dark:shadow-black/40">
           {[navItems[0], navItems[1], navItems[2], navItems[3], navItems[5]].map((item) => (
             <NavLink

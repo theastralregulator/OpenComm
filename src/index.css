@@ -78,6 +78,26 @@
     --shadow-floating: 0 28px 50px -10px rgba(124, 58, 237, 0.24), 0 12px 24px -6px rgba(124, 58, 237, 0.12);
   }
 
+  /* Fallback for --vh */
+  :root {
+    --vh: 1vh;
+    --viewport-height: 100vh;
+  }
+
+  /* Custom Visual Viewport Height Utilities */
+  @utility h-visual-screen {
+    height: calc(var(--vh, 1vh) * 100);
+  }
+
+  @utility min-h-visual-screen {
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  /* Hide bottom nav when keyboard is open to maximize screen space */
+  :root.keyboard-open .mobile-bottom-nav {
+    display: none !important;
+  }
+
   body {
     background-color: var(--bg-base);
     color: var(--text-primary);

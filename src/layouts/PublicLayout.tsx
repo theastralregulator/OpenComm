@@ -19,7 +19,7 @@ export const PublicLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg-light dark:bg-bg-dark transition-colors duration-200">
+    <div className="min-h-visual-screen flex flex-col bg-bg-light dark:bg-bg-dark transition-colors duration-200">
       {/* 1. Sticky Navigation Bar */}
       <div className="sticky top-4 z-50 w-full max-w-7xl mx-auto px-4 sm:px-6">
         <header className="rounded-2xl border border-indigo-500/15 dark:border-indigo-500/30 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl shadow-lg shadow-indigo-500/5 px-6 py-3.5 flex items-center justify-between transition-all duration-300">

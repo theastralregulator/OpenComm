@@ -74,7 +74,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen flex bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="flex-1 min-h-visual-screen flex bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
       
       {/* LEFT SIDE: OpenComm Branding Mesh (Desktop Only) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden items-center justify-center p-12">

@@ -11,8 +11,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from './components/ui/Toast';
 import { AppRoutes } from './routes';
 import { PWAReloadPrompt } from './components/PWAReloadPrompt';
+import { useVisualViewport } from './hooks/useVisualViewport';
 
 export default function App() {
+  useVisualViewport();
+  
   return (
     <ErrorBoundary>
       <ThemeProvider>
