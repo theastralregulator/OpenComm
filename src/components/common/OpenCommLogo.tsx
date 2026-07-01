@@ -1,17 +1,24 @@
 import React from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
+import darkWordmark from '@/assets/opencomm-dark-wordmark.png';
+import lightWordmark from '@/assets/opencomm-light-wordmark.png';
 
 interface LogoProps {
   iconSize?: number;
   showWordmark?: boolean;
-  isDark?: boolean;
   className?: string;
+  fillClass?: string;
 }
 
 /**
  * Highly polished modern geometric icon representation of "OpenComm".
  * It features a sleek talk-bubble intersecting with network nodes, in a sharp indigo/purple brand gradient.
  */
-export const OpenCommIcon: React.FC<{ className?: string; size?: number }> = ({ className = '', size = 44 }) => {
+export const OpenCommIcon: React.FC<{ className?: string; size?: number; style?: React.CSSProperties }> = ({ 
+  className = '', 
+  size = 44,
+  style
+}) => {
   return (
     <svg
       width={size}
@@ -20,7 +27,11 @@ export const OpenCommIcon: React.FC<{ className?: string; size?: number }> = ({ 
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`shrink-0 transition-transform duration-200 hover:scale-105 ${className}`}
+      style={style}
+      aria-label="OpenComm Logo"
+      role="img"
     >
+      <title>OpenComm Logo</title>
       <defs>
         <linearGradient id="oc-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#6366F1" /> {/* Indigo */}
@@ -42,51 +53,45 @@ export const OpenCommIcon: React.FC<{ className?: string; size?: number }> = ({ 
   );
 };
 
-/**
- * High-contrast, typographic SVG wordmark for "OpenComm".
- * Style-neutral and theme-aware through Tailwind CSS fill classes.
- */
-export const OpenCommWordmarkSVG: React.FC<{ className?: string; fillClass?: string }> = ({
-  className = '',
-  fillClass = 'fill-gray-900 dark:fill-white'
-}) => {
-  return (
-    <svg
-      height="26"
-      viewBox="0 0 150 28"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={`transition-colors duration-300 ${className}`}
-    >
-      <text
-        x="0"
-        y="21"
-        fontFamily="Inter, system-ui, -apple-system, sans-serif"
-        fontWeight="800"
-        fontSize="21"
-        letterSpacing="-0.6px"
-        className={`${fillClass} transition-colors duration-300`}
-      >
-        OpenComm
-      </text>
-    </svg>
-  );
-};
-
-export const OpenCommLogo: React.FC<LogoProps & { fillClass?: string }> = ({
-  iconSize = 44,
+export const OpenCommLogo: React.FC<LogoProps> = ({
+  iconSize,
   showWordmark = true,
   className = '',
-  fillClass
 }) => {
+  let theme = 'light';
+  try {
+    const themeContext = useTheme();
+    theme = themeContext.theme;
+  } catch (e) {
+    if (typeof document !== 'undefined') {
+      theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    }
+  }
+
+  // Determine the wordmark source based on the active theme
+  const wordmarkSrc = theme === 'dark' ? lightWordmark : darkWordmark;
+
+  // Sizing details:
+  // Desktop: 44px to 48px
+  // Tablet: slightly reduced (approx 40px)
+  // Mobile: 36px to 40px
+  const sizeStyles = iconSize ? { width: `${iconSize}px`, height: `${iconSize}px` } : undefined;
+  const iconSizeClass = iconSize ? '' : 'w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12';
+
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
-      <OpenCommIcon size={iconSize} />
+    <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`}>
+      <OpenCommIcon className={iconSizeClass} size={iconSize || 44} style={sizeStyles} />
       {showWordmark && (
-        <OpenCommWordmarkSVG fillClass={fillClass} />
+        <img
+          src={wordmarkSrc}
+          alt="OpenComm Wordmark"
+          className="hidden sm:block h-8 sm:h-9 md:h-10 lg:h-[44px] w-auto object-contain select-none transition-opacity duration-300"
+          loading="eager"
+        />
       )}
     </div>
   );
 };
 
 export default OpenCommLogo;
+
