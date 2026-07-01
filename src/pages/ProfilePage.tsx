@@ -211,54 +211,43 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* Main Card */}
-      <Card className="overflow-hidden border border-gray-150 dark:border-slate-800 shadow-lg relative">
-        {/* Cover Photo */}
-        {((profile.bannerPhotoURL || profile.coverImage) && (profile.bannerPhotoURL || profile.coverImage || '').startsWith('http')) ? (
-          <div className="h-44 sm:h-52 w-full overflow-hidden relative">
-            <img
-              src={profile.bannerPhotoURL || profile.coverImage}
-              alt="Cover Banner"
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
-        ) : (
-          <div className={`h-44 sm:h-52 bg-gradient-to-r ${profile.bannerPhotoURL || profile.coverImage || 'from-slate-900 to-indigo-950'} relative`} />
-        )}
-
-        <CardContent className="relative pt-0 px-4 sm:px-8 pb-8">
-          {/* Avatar overlap */}
-          <div className="absolute -top-16 left-4 sm:left-8">
-            <div className="p-1 bg-white dark:bg-slate-900 rounded-full border border-gray-100 dark:border-slate-850 shadow-md">
-              <Avatar
-                userId={profile.uid}
-                src={profile.profilePhotoURL || profile.profileImage || profile.photoURL}
-                fallback={profile.displayName || 'OC'}
-                size="xl"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-6 pt-16 sm:pt-20">
-            {/* Header info & buttons */}
-            <div className="flex justify-between items-start flex-wrap gap-4">
-              <div className="text-left flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-bold text-gray-990 dark:text-white tracking-tight">
-                    {profile.displayName}
-                  </h1>
-                  {profile.role === 'admin' && (
-                    <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-mono font-bold px-2 py-0.5 rounded-full border border-indigo-100/50 dark:border-indigo-900/50">
-                      ADMIN
-                    </span>
-                  )}
+      <Card className="overflow-hidden border border-gray-150 dark:border-slate-800 shadow-lg">
+        <CardContent className="px-4 sm:px-8 py-8">
+          <div className="flex flex-col gap-6">
+            
+            {/* Header section with Avatar and Buttons */}
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              
+              <div className="flex items-center gap-4">
+                {/* Avatar */}
+                <div className="shrink-0 p-1 bg-white dark:bg-slate-900 rounded-full border border-gray-100 dark:border-slate-850 shadow-md">
+                  <Avatar
+                    userId={profile.uid}
+                    src={profile.profilePhotoURL || profile.profileImage || profile.photoURL}
+                    fallback={profile.displayName || 'OC'}
+                    size="xl"
+                  />
                 </div>
-                <p className="text-xs font-mono text-gray-400 dark:text-slate-500">
-                  @{profile.username} • ID: {profile.openCommId || 'OC-000000'}
-                </p>
+                
+                {/* User Info */}
+                <div className="text-left flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-gray-990 dark:text-white tracking-tight">
+                      {profile.displayName}
+                    </h1>
+                    {profile.role === 'admin' && (
+                      <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-mono font-bold px-2 py-0.5 rounded-full border border-indigo-100/50 dark:border-indigo-900/50">
+                        ADMIN
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs font-mono text-gray-400 dark:text-slate-500">
+                    @{profile.username} • ID: {profile.openCommId || 'OC-000000'}
+                  </p>
+                </div>
               </div>
 
+              {/* Action Buttons */}
               <div className="flex items-center gap-2">
                 {isOwnProfile ? (
                   <Button
@@ -365,28 +354,6 @@ export const ProfilePage: React.FC = () => {
                   )}
                 </div>
               </div>
-            </div>
-
-            {/* Profile Statistics bar */}
-            <div className="grid grid-cols-3 gap-4 border-y border-gray-100/70 dark:border-slate-800/80 py-4 text-center">
-              <div className="p-1.5">
-                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.postCount !== undefined ? profile.postCount : (profile.postsCount || 0)}</p>
-                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Conversations</p>
-              </div>
-              <button 
-                onClick={() => setActiveFollowModal('followers')} 
-                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 p-1.5 rounded-xl transition-colors duration-200 outline-none"
-              >
-                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.followerCount !== undefined ? profile.followerCount : (profile.followersCount || 0)}</p>
-                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Followers</p>
-              </button>
-              <button 
-                onClick={() => setActiveFollowModal('following')} 
-                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-850 p-1.5 rounded-xl transition-colors duration-200 outline-none"
-              >
-                <p className="text-xl font-bold text-gray-900 dark:text-white font-mono">{profile.followingCount || 0}</p>
-                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono tracking-wider uppercase">Following</p>
-              </button>
             </div>
 
             {/* Bio section */}

@@ -6,6 +6,7 @@ import lightWordmark from '@/assets/opencomm-light-wordmark.png';
 interface LogoProps {
   iconSize?: number;
   showWordmark?: boolean;
+  showIcon?: boolean;
   className?: string;
   fillClass?: string;
 }
@@ -56,6 +57,7 @@ export const OpenCommIcon: React.FC<{ className?: string; size?: number; style?:
 export const OpenCommLogo: React.FC<LogoProps> = ({
   iconSize,
   showWordmark = true,
+  showIcon = true,
   className = '',
 }) => {
   let theme = 'light';
@@ -80,7 +82,9 @@ export const OpenCommLogo: React.FC<LogoProps> = ({
 
   return (
     <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`}>
-      <OpenCommIcon className={iconSizeClass} size={iconSize || 44} style={sizeStyles} />
+      {showIcon && (
+        <OpenCommIcon className={iconSizeClass} size={iconSize || 44} style={sizeStyles} />
+      )}
       {showWordmark && (
         <img
           src={wordmarkSrc}

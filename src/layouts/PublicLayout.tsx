@@ -23,19 +23,19 @@ export const PublicLayout: React.FC = () => {
       {/* 1. Sticky Navigation Bar */}
       <div className="sticky top-4 z-50 w-full max-w-7xl mx-auto px-4 sm:px-6">
         <header className="rounded-2xl border border-indigo-500/15 dark:border-indigo-500/30 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl shadow-lg shadow-indigo-500/5 px-6 py-3.5 flex items-center justify-between transition-all duration-300">
-          {/* Logo Brand */}
-          <Link to="/" className="hover:opacity-90 transition-opacity">
-            <OpenCommLogo iconSize={42} />
-          </Link>
-
-          {/* Center Navigation - Desktop */}
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="/#hero" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">Home</a>
-            <a href="/#features" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">Features</a>
-            <a href="/#showcase" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">Rooms</a>
-            <a href="/#mission" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">About</a>
-            <a href="/#faq" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">FAQ</a>
-          </nav>
+          {/* Left Logo & Center Navigation */}
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex-shrink-0 hover:opacity-90 transition-opacity">
+              <OpenCommLogo showIcon={false} />
+            </Link>
+            <nav className="hidden md:flex items-center gap-6">
+              <a href="/#hero" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">Home</a>
+              <a href="/#features" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">Features</a>
+              <a href="/#showcase" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">Rooms</a>
+              <a href="/#mission" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">About</a>
+              <a href="/#faq" className="text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-primary-blue dark:hover:text-accent-blue transition-colors">FAQ</a>
+            </nav>
+          </div>
 
           {/* Right Actions - Desktop */}
           <div className="hidden md:flex items-center gap-4">
@@ -66,7 +66,7 @@ export const PublicLayout: React.FC = () => {
           </div>
 
           {/* Mobile Menu Actions */}
-          <div className="flex md:hidden items-center gap-3">
+          <div className="flex md:hidden items-center gap-3 ml-auto">
             <ThemeToggle />
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

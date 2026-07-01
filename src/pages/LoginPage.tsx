@@ -89,7 +89,7 @@ export const LoginPage: React.FC = () => {
         <div className="relative z-10 max-w-md w-full flex flex-col justify-between h-full py-10">
           {/* Logo */}
           <div className="flex items-center">
-            <OpenCommLogo iconSize={42} fillClass="fill-white" />
+            <OpenCommLogo showIcon={false} fillClass="fill-white" />
           </div>
 
           {/* Core Content */}
@@ -110,17 +110,6 @@ export const LoginPage: React.FC = () => {
               </p>
             </motion.div>
 
-            {/* Micro Stats or Trust Metrics */}
-            <div className="mt-12 grid grid-cols-2 gap-6 border-t border-slate-800 pt-8">
-              <div>
-                <p className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-1">Architecture</p>
-                <p className="text-sm font-semibold text-slate-200">Zero-Knowledge ABAC</p>
-              </div>
-              <div>
-                <p className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-1">Integrity</p>
-                <p className="text-sm font-semibold text-slate-200">Cryptographic Identity</p>
-              </div>
-            </div>
           </div>
 
           {/* Footer */}
@@ -136,7 +125,7 @@ export const LoginPage: React.FC = () => {
           
           {/* Mobile Header (Hidden on Desktop) */}
           <div className="flex flex-col items-center text-center lg:hidden gap-3">
-            <OpenCommLogo iconSize={44} />
+            <OpenCommLogo showIcon={false} />
             <p className="text-caption text-gray-500 dark:text-slate-400 mt-1">
               Secure Peer-to-Peer Communication
             </p>

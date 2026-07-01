@@ -90,7 +90,7 @@ export const AuthLayout: React.FC = () => {
         {/* Brand Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-50 dark:border-slate-800/50 flex-shrink-0">
           <NavLink to="/feed" className="hover:opacity-90 transition-opacity">
-            <OpenCommLogo iconSize={42} />
+            <OpenCommLogo iconSize={42} showIcon={false} className="pl-1" />
           </NavLink>
           <button
             id="close-sidebar-btn"
