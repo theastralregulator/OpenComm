@@ -80,6 +80,7 @@ export interface Post {
   text?: string;
   imageUrl?: string;
   imageUrls?: string[];
+  aspectRatio?: number;
   likesCount: number;
   likeCount?: number;
   commentsCount: number;

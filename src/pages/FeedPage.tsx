@@ -338,6 +338,7 @@ export const FeedPage: React.FC = () => {
     setComposerProgress(0);
 
     const uploadedUrls: string[] = [];
+    let primaryAspectRatio: number | undefined;
     try {
       if (composerFiles.length > 0) {
         for (let i = 0; i < composerFiles.length; i++) {
@@ -345,6 +346,7 @@ export const FeedPage: React.FC = () => {
           const path = `posts/${user.uid}/${Date.now()}_${i}_${file.name}`;
           try {
             const dims = await getImageDimensions(file);
+            if (i === 0) primaryAspectRatio = dims.aspectRatio;
             const url = await uploadImage(file, path, (progress) => {
               const singleProgressWeight = 100 / composerFiles.length;
               const completedWeight = i * singleProgressWeight;
@@ -391,6 +393,7 @@ export const FeedPage: React.FC = () => {
           caption: composerCaption.trim(),
           imageUrl: uploadedUrls[0] || undefined,
           imageUrls: uploadedUrls.length > 0 ? uploadedUrls : undefined,
+          aspectRatio: primaryAspectRatio,
           visibility: composerVisibility
         });
       } catch (saveErr) {
@@ -847,6 +850,7 @@ export const FeedPage: React.FC = () => {
                     <div className="mb-3">
                       <ImageCarousel 
                         imageUrls={post.imageUrls && post.imageUrls.length > 0 ? post.imageUrls : [post.imageUrl!]} 
+                        aspectRatio={post.aspectRatio}
                       />
                     </div>
                   )}

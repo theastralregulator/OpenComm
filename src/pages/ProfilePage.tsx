@@ -692,14 +692,14 @@ const ProfileTabsSection: React.FC<ProfileTabsSectionProps> = ({ profile, isOwnP
 
       {/* Conversations View */}
       {activeTab === 'conversations' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="columns-1 md:columns-2 gap-4 space-y-4">
           {loadingPosts ? (
-            <div className="col-span-2 flex flex-col items-center justify-center py-16 gap-2">
+            <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center py-16 gap-2">
               <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-xs text-gray-400">Fetching timeline...</p>
             </div>
           ) : userPosts.length === 0 ? (
-            <div className="col-span-2 border border-dashed border-gray-200 dark:border-slate-800 rounded-2xl p-12 text-center">
+            <div className="col-span-1 md:col-span-2 border border-dashed border-gray-200 dark:border-slate-800 rounded-2xl p-12 text-center">
               <MessageSquare className="h-8 w-8 mx-auto text-gray-300 dark:text-slate-700 mb-2" />
               <p className="text-sm font-semibold text-gray-700 dark:text-slate-300">No Conversations yet</p>
               <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">This communicator hasn't broadcasted any posts on the network.</p>
@@ -708,14 +708,17 @@ const ProfileTabsSection: React.FC<ProfileTabsSectionProps> = ({ profile, isOwnP
             userPosts.map((post) => (
               <Card 
                 key={post.postId} 
-                className="border border-gray-150 dark:border-slate-800/80 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer"
+                className="break-inside-avoid border border-gray-150 dark:border-slate-800/80 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer"
                 onClick={() => setActivePostForView(post as Post)}
               >
                 <CardContent className="p-4 flex flex-col justify-between h-full text-left gap-3">
                   <div className="space-y-2">
                     {post.imageUrl && (
-                      <div className="h-40 w-full overflow-hidden rounded-lg border border-gray-100 dark:border-slate-800">
-                        <img src={post.imageUrl} alt="Post media" className="w-full h-full object-cover" />
+                      <div 
+                        className="w-full overflow-hidden rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50"
+                        style={{ aspectRatio: post.aspectRatio || 'auto' }}
+                      >
+                        <img src={post.imageUrl} alt="Post media" className="w-full h-full object-contain md:object-cover" />
                       </div>
                     )}
                     <p className="text-[13.5px] text-slate-800 dark:text-slate-200 font-sans leading-relaxed line-clamp-4 font-normal">

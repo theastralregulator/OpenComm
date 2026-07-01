@@ -89,6 +89,7 @@ export const PostModal: React.FC<PostModalProps> = ({
             <div className="mb-3 rounded-lg overflow-hidden border border-gray-100 dark:border-slate-800">
               <ImageCarousel 
                 imageUrls={post.imageUrls && post.imageUrls.length > 0 ? post.imageUrls : [post.imageUrl!]} 
+                aspectRatio={post.aspectRatio}
               />
             </div>
           )}

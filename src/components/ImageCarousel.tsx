@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Maximize2, ZoomIn, ZoomOut, X } from 'lucide
 
 interface ImageCarouselProps {
   imageUrls: string[];
-  aspectRatio?: string;
+  aspectRatio?: string | number;
 }
 
 export const ImageCarousel: React.FC<ImageCarouselProps> = ({ imageUrls, aspectRatio }) => {
@@ -60,10 +60,13 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ imageUrls, aspectR
     setLoadedImages(prev => ({ ...prev, [index]: true }));
   };
 
-  // Convert string ratio (e.g. '16:9') to Tailwind style or inline CSS aspect ratio
+  // Convert ratio to Tailwind style or inline CSS aspect ratio
   const getAspectStyle = () => {
     if (!aspectRatio || aspectRatio === 'original') return {};
-    const parts = aspectRatio.split(':');
+    if (typeof aspectRatio === 'number') {
+      return { aspectRatio: aspectRatio };
+    }
+    const parts = (aspectRatio as string).split(':');
     if (parts.length === 2) {
       const w = Number(parts[0]);
       const h = Number(parts[1]);
