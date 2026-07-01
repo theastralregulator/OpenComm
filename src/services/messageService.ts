@@ -25,7 +25,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, isFirebaseConfigured, storage } from './firebase/config';
 import { handleFirestoreError, OperationType } from './firebase/errors';
 import { UserProfile } from '../types';
-import { createNotification } from './notificationService';
+import { createNotification, deleteNotificationsByLink } from './notificationService';
 
 export interface DirectChat {
   chatId: string;
@@ -502,18 +502,20 @@ export function listenToChats(userId: string, callback: (chats: DirectChat[]) =>
     const chatsRef = collection(db, CONVERSATIONS_COLLECTION);
     const q = query(
       chatsRef,
-      where('participants', 'array-contains', userId),
-      orderBy('updatedAt', 'desc')
+      where('participants', 'array-contains', userId)
     );
 
     return onSnapshot(q, (snapshot) => {
-      const chats: DirectChat[] = [];
+      let chats: DirectChat[] = [];
       snapshot.forEach((doc) => {
         const c = doc.data() as DirectChat;
         if (!c.deletedBy || !c.deletedBy.includes(userId)) {
           chats.push(c);
         }
       });
+      // Sort client-side to avoid needing a composite index in Firestore
+      chats.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      
       callback(chats);
     }, (error) => {
       console.error('[OpenComm] Error listening to chats:', error);
@@ -622,11 +624,14 @@ export async function sendDirectMessage(
       }
 
       // 3. Create Real Notifications
+      const safePhotoURL = (url?: string) =>
+        !url || url.startsWith('data:') ? '' : url.slice(0, 2048);
+        
       await createNotification({
         recipientId,
         senderId: sender.uid,
         senderName: sender.displayName || sender.username || 'Peer',
-        senderPhotoURL: sender.photoURL || '',
+        senderPhotoURL: safePhotoURL(sender.photoURL),
         type: 'message',
         message: replyTo ? `replied to your message: "${text}"` : `sent you a message: "${text || 'attachment'}"`,
         link: `/messages/${chatId}`
@@ -766,6 +771,8 @@ export async function markChatAsRead(chatId: string, userId: string, otherUserId
       await updateDoc(chatRef, {
         [`unreadCount.${userId}`]: 0
       });
+
+      await deleteNotificationsByLink(userId, `/messages/${chatId}`);
 
       const messagesRef = collection(db, 'messages', chatId, 'messages');
       const q = query(

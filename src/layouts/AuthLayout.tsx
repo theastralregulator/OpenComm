@@ -26,6 +26,7 @@ import { Avatar } from '../components/ui/Avatar';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { showToast } from '../components/ui/Toast';
 import { onNotificationsSnapshot } from '../services/notificationService';
+import { listenToChats } from '../services/messageService';
 import { OpenCommLogo } from '../components/common/OpenCommLogo';
 
 export const AuthLayout: React.FC = () => {
@@ -34,10 +35,11 @@ export const AuthLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = React.useState(0);
+  const [unreadChatsCount, setUnreadChatsCount] = React.useState(0);
 
   React.useEffect(() => {
     if (!user) return;
-    const unsubscribe = onNotificationsSnapshot(
+    const unsubscribeNotifications = onNotificationsSnapshot(
       user.uid,
       (list) => {
         const unread = list.filter((n) => !n.isRead).length;
@@ -47,7 +49,16 @@ export const AuthLayout: React.FC = () => {
         console.error('Error in AuthLayout notifications listener:', error);
       }
     );
-    return () => unsubscribe();
+    
+    const unsubscribeChats = listenToChats(user.uid, (chats) => {
+      const unreadChats = chats.filter(c => (c.unreadCount?.[user.uid] || 0) > 0 && !c.archivedBy?.includes(user.uid)).length;
+      setUnreadChatsCount(unreadChats);
+    });
+
+    return () => {
+      unsubscribeNotifications();
+      unsubscribeChats();
+    };
   }, [user]);
 
   const handleLogout = async () => {
@@ -62,7 +73,7 @@ export const AuthLayout: React.FC = () => {
     { name: 'Feed', path: '/feed', icon: <Home className="h-5 w-5" /> },
     { name: 'Explore', path: '/explore', icon: <Compass className="h-5 w-5" /> },
     { name: 'Rooms', path: '/rooms', icon: <Users className="h-5 w-5" /> },
-    { name: 'Messages', path: '/messages', icon: <Mail className="h-5 w-5" /> },
+    { name: 'Messages', path: '/messages', icon: <Mail className="h-5 w-5" />, badge: unreadChatsCount > 0 ? unreadChatsCount : undefined },
     { name: 'Notifications', path: '/notifications', icon: <Bell className="h-5 w-5" />, badge: unreadCount > 0 ? unreadCount : undefined },
     { name: 'Profile', path: `/profile/${username}`, icon: <User className="h-5 w-5" /> },
     { name: 'Settings', path: '/settings', icon: <Settings className="h-5 w-5" /> },

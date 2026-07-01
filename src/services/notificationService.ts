@@ -264,6 +264,34 @@ export async function deleteNotification(notificationId: string, recipientId: st
 }
 
 /**
+ * Deletes all notifications for a given link.
+ */
+export async function deleteNotificationsByLink(recipientId: string, link: string): Promise<void> {
+  if (isFirebaseConfigured && db) {
+    try {
+      const q = query(
+        collection(db, NOTIFICATIONS_COLLECTION),
+        where('recipientId', '==', recipientId),
+        where('link', '==', link)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const batch = writeBatch(db);
+        snap.forEach(docSnap => batch.delete(docSnap.ref));
+        await batch.commit();
+      }
+    } catch (err) {
+      console.error('Failed to delete notifications by link:', err);
+    }
+  } else {
+    // Mock Mode
+    const list = getLocalMockNotifications(recipientId);
+    const filtered = list.filter(n => n.link !== link);
+    saveLocalMockNotifications(filtered, recipientId);
+  }
+}
+
+/**
  * Deletes all notifications for a recipient.
  */
 export async function clearAllNotifications(recipientId: string): Promise<void> {

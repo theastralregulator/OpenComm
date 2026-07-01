@@ -1101,14 +1101,6 @@ export const MessagesPage: React.FC = () => {
                   >
                     <Search className="h-4 w-4" />
                   </button>
-
-                  <button onClick={() => showToast.info('Connecting space audio room integration...')} className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl">
-                    <Volume2 className="h-4 w-4" />
-                  </button>
-                  <button onClick={() => showToast.info('Video feed launcher running...')} className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl">
-                    <Video className="h-4 w-4" />
-                  </button>
-
                   <div className="relative">
                     <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl">
                       <MoreVertical className="h-4 w-4" />
@@ -1239,31 +1231,6 @@ export const MessagesPage: React.FC = () => {
                               >
                                 {highlightMessageText(msg.text)}
 
-                                {/* Media Attachments inside Message bubble */}
-                                {msg.attachmentUrl && (
-                                  <div className="mt-2.5 overflow-hidden rounded-xl border border-gray-100/10 bg-slate-900/10">
-                                    {msg.attachmentType === 'image' && (
-                                      <img src={msg.attachmentUrl} alt="shared asset" className="max-w-full max-h-48 object-cover rounded-xl cursor-zoom-in" onClick={() => window.open(msg.attachmentUrl, '_blank')} />
-                                    )}
-                                    {msg.attachmentType === 'video' && (
-                                      <video src={msg.attachmentUrl} controls className="max-w-full rounded-xl" />
-                                    )}
-                                    {msg.attachmentType === 'audio' && (
-                                      <audio src={msg.attachmentUrl} controls className="max-w-full p-1" />
-                                    )}
-                                    {msg.attachmentType === 'file' && (
-                                      <a
-                                        href={msg.attachmentUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 p-2.5 text-[11px] text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 rounded-xl"
-                                      >
-                                        <Paperclip className="h-3.5 w-3.5" />
-                                        <span className="truncate flex-1 font-bold">{msg.attachmentName || 'Shared Document'}</span>
-                                      </a>
-                                    )}
-                                  </div>
-                                )}
                               </div>
 
                               {msg.reactions && Object.keys(msg.reactions).length > 0 && (
@@ -1323,16 +1290,18 @@ export const MessagesPage: React.FC = () => {
                               <button onClick={() => handleTogglePinMessage(msg)} className="p-1 text-gray-500 hover:text-indigo-600 rounded">
                                 <Pin className="h-3.5 w-3.5" />
                               </button>
-                              <button onClick={() => handleStartEdit(msg)} className="p-1 text-gray-500 hover:text-indigo-600 rounded">
-                                <Sparkles className="h-3.5 w-3.5" />
-                              </button>
-                              <button onClick={() => handleDeleteMe(msg)} className="p-1 text-gray-500 hover:text-red-500 rounded" title="Delete for me">
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
                               {isMe && (
-                                <button onClick={() => handleDeleteEveryone(msg)} className="p-1 text-red-500 hover:text-red-600 rounded" title="Delete for everyone">
-                                  <AlertTriangle className="h-3.5 w-3.5" />
-                                </button>
+                                <>
+                                  <button onClick={() => handleStartEdit(msg)} className="p-1 text-gray-500 hover:text-indigo-600 rounded">
+                                    <Sparkles className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button onClick={() => handleDeleteMe(msg)} className="p-1 text-gray-500 hover:text-red-500 rounded" title="Delete for me">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button onClick={() => handleDeleteEveryone(msg)} className="p-1 text-red-500 hover:text-red-600 rounded" title="Delete for everyone">
+                                    <AlertTriangle className="h-3.5 w-3.5" />
+                                  </button>
+                                </>
                               )}
                             </div>
                           </div>
@@ -1401,28 +1370,6 @@ export const MessagesPage: React.FC = () => {
                   )}
 
                   <div className="flex items-end gap-2.5">
-                    {/* Media Attachments Dropdown Menu */}
-                    <div className="flex items-center gap-1">
-                      <label className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-800/50" title="Share Document / Image / Video">
-                        <Paperclip className="h-4.5 w-4.5" />
-                        <input type="file" onChange={handleFileUpload} className="hidden" />
-                      </label>
-
-                      {/* Native mic recording trigger */}
-                      {isRecording ? (
-                        <div className="flex items-center gap-1.5 bg-red-500 text-white rounded-xl px-2.5 py-1.5 text-[10px] font-bold animate-pulse">
-                          <Mic className="h-3.5 w-3.5" />
-                          <span>{formatDuration(recordingDuration)}</span>
-                          <button onClick={() => stopRecording(true)} className="p-0.5 hover:bg-white/20 rounded font-bold ml-1 text-white">Send</button>
-                          <button onClick={() => stopRecording(false)} className="p-0.5 hover:bg-white/20 rounded font-bold ml-1 text-white">Cancel</button>
-                        </div>
-                      ) : (
-                        <button onClick={startRecording} className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl" title="Record Voice Note">
-                          <Mic className="h-4.5 w-4.5" />
-                        </button>
-                      )}
-                    </div>
-
                     <div className="relative">
                       <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl">
                         <Smile className="h-4.5 w-4.5" />
