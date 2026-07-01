@@ -1,0 +1,375 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing account details and personal preferences",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique Firebase Authentication UID"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique lowercase alphanumeric username used as unique handle"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Formatted name displayed across the system"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL to profile avatar image"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "member"],
+          "description": "User security level"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp when the user registered"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of the last user update"
+        },
+        "bio": {
+          "type": "string",
+          "description": "Short bio or biography description"
+        },
+        "isSetupCompleted": {
+          "type": "boolean",
+          "description": "Whether the user finished onboarding / profile setup"
+        },
+        "openCommId": {
+          "type": "string",
+          "description": "Unique generated identifier formatted as OC-XXXXXX"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Complete real name of the user"
+        },
+        "profileImage": {
+          "type": "string",
+          "description": "High-resolution user profile image URL"
+        },
+        "coverImage": {
+          "type": "string",
+          "description": "High-resolution header banner image URL"
+        },
+        "location": {
+          "type": "string",
+          "description": "Physical geographic location of the user"
+        },
+        "interests": {
+          "type": "array",
+          "description": "List of user-selected interests"
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website or portfolio URL"
+        },
+        "birthday": {
+          "type": "string",
+          "description": "Optional date string representing the user's birthdate"
+        },
+        "followersCount": {
+          "type": "integer",
+          "description": "Total followers count"
+        },
+        "followingCount": {
+          "type": "integer",
+          "description": "Total following count"
+        },
+        "postsCount": {
+          "type": "integer",
+          "description": "Total posts or conversations count"
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "Whether the user's account is verified"
+        },
+        "isOnline": {
+          "type": "boolean",
+          "description": "Whether the user is currently online"
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of when the user was last active"
+        }
+      },
+      "required": ["uid", "email", "role", "createdAt", "isSetupCompleted"]
+    },
+    "Room": {
+      "title": "Room",
+      "description": "A discussion space of text or live audio type, public or private",
+      "type": "object",
+      "properties": {
+        "roomId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "roomType": {
+          "type": "string",
+          "enum": ["text", "audio"]
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "private"]
+        },
+        "roomImage": {
+          "type": "string"
+        },
+        "bannerImage": {
+          "type": "string"
+        },
+        "maxMembers": {
+          "type": "integer"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "creatorName": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "membersCount": {
+          "type": "integer"
+        },
+        "pinnedMessages": {
+          "type": "array"
+        }
+      },
+      "required": ["roomId", "name", "category", "roomType", "visibility", "createdBy", "createdAt", "membersCount"]
+    },
+    "RoomMember": {
+      "title": "RoomMember",
+      "description": "Association between a user and a Room, tracking role, approval, and live audio state",
+      "type": "object",
+      "properties": {
+        "memberId": {
+          "type": "string"
+        },
+        "roomId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "photoURL": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["owner", "moderator", "member"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["approved", "pending"]
+        },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "isMuted": {
+          "type": "boolean"
+        },
+        "audioRole": {
+          "type": "string",
+          "enum": ["host", "speaker", "listener"]
+        },
+        "isSpeaking": {
+          "type": "boolean"
+        },
+        "isMicrophoneOn": {
+          "type": "boolean"
+        }
+      },
+      "required": ["memberId", "roomId", "userId", "role", "status", "joinedAt"]
+    },
+    "RoomMessage": {
+      "title": "RoomMessage",
+      "description": "Real-time chat message sent inside a Room",
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "type": "string"
+        },
+        "roomId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "photoURL": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reactions": {
+          "type": "object"
+        },
+        "replyToId": {
+          "type": "string"
+        },
+        "replyToUser": {
+          "type": "string"
+        },
+        "replyToText": {
+          "type": "string"
+        },
+        "isPinned": {
+          "type": "boolean"
+        },
+        "isReported": {
+          "type": "boolean"
+        }
+      },
+      "required": ["messageId", "roomId", "userId", "text", "createdAt"]
+    },
+    "RoomInvite": {
+      "title": "RoomInvite",
+      "description": "Invitation from a member to another user to join a private room",
+      "type": "object",
+      "properties": {
+        "inviteId": {
+          "type": "string"
+        },
+        "roomId": {
+          "type": "string"
+        },
+        "roomName": {
+          "type": "string"
+        },
+        "inviterId": {
+          "type": "string"
+        },
+        "inviterName": {
+          "type": "string"
+        },
+        "inviteeId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "accepted", "declined"]
+        }
+      },
+      "required": ["inviteId", "roomId", "roomName", "inviterId", "inviteeId", "createdAt", "status"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "A notification document for a user",
+      "type": "object",
+      "properties": {
+        "notificationId": { "type": "string" },
+        "recipientId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderPhotoURL": { "type": "string" },
+        "type": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "isRead": { "type": "boolean" },
+        "link": { "type": "string" },
+        "postId": { "type": "string" },
+        "roomId": { "type": "string" }
+      },
+      "required": ["notificationId", "recipientId", "type", "message", "createdAt", "isRead"]
+    },
+    "FollowRelation": {
+      "title": "FollowRelation",
+      "description": "Follow relationship between two users",
+      "type": "object",
+      "properties": {
+        "followId": { "type": "string" },
+        "followerId": { "type": "string" },
+        "followerUsername": { "type": "string" },
+        "followerDisplayName": { "type": "string" },
+        "followerPhotoURL": { "type": "string" },
+        "followingId": { "type": "string" },
+        "followingUsername": { "type": "string" },
+        "followingDisplayName": { "type": "string" },
+        "followingPhotoURL": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["followId", "followerId", "followerUsername", "followingId", "followingUsername", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Root collection for all registered OpenComm users indexed by their Auth UID"
+    },
+    "rooms/{roomId}": {
+      "schema": "Room",
+      "description": "Collection of all discussions or audio spaces"
+    },
+    "rooms/{roomId}/members/{memberId}": {
+      "schema": "RoomMember",
+      "description": "Subcollection inside each room managing active members and pending requests"
+    },
+    "rooms/{roomId}/messages/{messageId}": {
+      "schema": "RoomMessage",
+      "description": "Subcollection inside each room managing real-time chat messages"
+    },
+    "roomInvites/{inviteId}": {
+      "schema": "RoomInvite",
+      "description": "Top-level collection for pending invitations to rooms"
+    },
+    "notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Real-time notification document for a recipient"
+    },
+    "follows/{followId}": {
+      "schema": "FollowRelation",
+      "description": "Symmetric and queryable connection graph of followers and following relationships"
+    }
+  }
+}

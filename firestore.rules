@@ -1,0 +1,328 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net - default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'opencomm2026@gmail.com' ||
+        request.auth.token.get('email', '') == 'opencomm2026@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'member') == 'admin')
+      );
+    }
+
+    // Helper to validate the User entity schema
+    function isValidUser(data) {
+      return (data.get('uid', null) == null || (data.get('uid', null) is string && data.get('uid', null).size() <= 128))
+        && (data.get('email', null) == null || (data.get('email', null) is string && data.get('email', null).size() <= 256))
+        && (data.get('username', null) == null || (data.get('username', null) is string && data.get('username', null).size() >= 3 && data.get('username', null).size() <= 20 && data.get('username', null).matches('^[a-zA-Z0-9_]+$')))
+        && (data.get('displayName', null) == null || (data.get('displayName', null) is string && data.get('displayName', null).size() <= 100))
+        && (data.get('photoURL', null) == null || (data.get('photoURL', null) is string && data.get('photoURL', null).size() <= 1000000))
+        && (data.get('role', null) == null || data.get('role', null) == 'admin' || data.get('role', null) == 'member')
+        && (data.get('createdAt', null) == null || data.get('createdAt', null) is string || data.get('createdAt', null) is timestamp)
+        && (data.get('updatedAt', null) == null || data.get('updatedAt', null) is string || data.get('updatedAt', null) is timestamp)
+        && (data.get('bio', null) == null || (data.get('bio', null) is string && data.get('bio', null).size() <= 500))
+        && (data.get('isSetupCompleted', null) == null || data.get('isSetupCompleted', null) is bool)
+        && (data.get('openCommId', null) == null || (data.get('openCommId', null) is string && data.get('openCommId', null).size() <= 50 && data.get('openCommId', null).matches('^OC-[0-9]{6}$')))
+        && (data.get('fullName', null) == null || (data.get('fullName', null) is string && data.get('fullName', null).size() <= 100))
+        && (data.get('profileImage', null) == null || (data.get('profileImage', null) is string && data.get('profileImage', null).size() <= 1000000))
+        && (data.get('coverImage', null) == null || (data.get('coverImage', null) is string && data.get('coverImage', null).size() <= 1000000))
+        && (data.get('location', null) == null || (data.get('location', null) is string && data.get('location', null).size() <= 100))
+        && (data.get('interests', null) == null || (data.get('interests', null) is list && data.get('interests', null).size() <= 20))
+        && (data.get('website', null) == null || (data.get('website', null) is string && data.get('website', null).size() <= 256))
+        && (data.get('birthday', null) == null || (data.get('birthday', null) is string && data.get('birthday', null).size() <= 50))
+        && (data.get('followersCount', null) == null || data.get('followersCount', null) is int)
+        && (data.get('followingCount', null) == null || data.get('followingCount', null) is int)
+        && (data.get('postsCount', null) == null || data.get('postsCount', null) is int)
+        && (data.get('followerCount', null) == null || data.get('followerCount', null) is int)
+        && (data.get('postCount', null) == null || data.get('postCount', null) is int)
+        && (data.get('profilePhotoURL', null) == null || (data.get('profilePhotoURL', null) is string && data.get('profilePhotoURL', null).size() <= 1000000))
+        && (data.get('bannerPhotoURL', null) == null || (data.get('bannerPhotoURL', null) is string && data.get('bannerPhotoURL', null).size() <= 1000000))
+        && (data.get('verified', null) == null || data.get('verified', null) is bool)
+        && (data.get('isOnline', null) == null || data.get('isOnline', null) is bool)
+        && (data.get('lastSeen', null) == null || data.get('lastSeen', null) is string || data.get('lastSeen', null) is timestamp)
+        && (data.get('isProfilePublic', null) == null || data.get('isProfilePublic', null) is bool)
+        && (data.get('whoCanMessage', null) == null || (data.get('whoCanMessage', null) is string && data.get('whoCanMessage', null).size() <= 50))
+        && (data.get('whoCanInvite', null) == null || (data.get('whoCanInvite', null) is string && data.get('whoCanInvite', null).size() <= 50))
+        && (data.get('whoCanMention', null) == null || (data.get('whoCanMention', null) is string && data.get('whoCanMention', null).size() <= 50))
+        && (data.get('showOnlineStatus', null) == null || data.get('showOnlineStatus', null) is bool)
+        && (data.get('notifLikes', null) == null || data.get('notifLikes', null) is bool)
+        && (data.get('notifComments', null) == null || data.get('notifComments', null) is bool)
+        && (data.get('notifMentions', null) == null || data.get('notifMentions', null) is bool)
+        && (data.get('notifMessages', null) == null || data.get('notifMessages', null) is bool)
+        && (data.get('notifRooms', null) == null || data.get('notifRooms', null) is bool)
+        && (data.get('notifAnnouncements', null) == null || data.get('notifAnnouncements', null) is bool)
+        && (data.get('themePreference', null) == null || (data.get('themePreference', null) is string && data.get('themePreference', null).size() <= 20));
+    }
+
+    function isValidNotification(data) {
+      return data.get('notificationId', null) is string
+        && data.get('notificationId', null).size() <= 128
+        && data.get('recipientId', null) is string
+        && data.get('recipientId', null).size() <= 128
+        && (data.get('senderId', null) == null || (data.get('senderId', null) is string && data.get('senderId', null).size() <= 128))
+        && (data.get('senderName', null) == null || (data.get('senderName', null) is string && data.get('senderName', null).size() <= 100))
+        && (data.get('senderPhotoURL', null) == null || (data.get('senderPhotoURL', null) is string && data.get('senderPhotoURL', null).size() <= 2048))
+        && data.get('type', null) is string
+        && data.get('type', null).size() <= 50
+        && data.get('message', null) is string
+        && data.get('message', null).size() <= 1000
+        && data.get('createdAt', null) is string
+        && data.get('createdAt', null).size() <= 50
+        && data.get('isRead', null) is bool
+        && (data.get('link', null) == null || (data.get('link', null) is string && data.get('link', null).size() <= 2048))
+        && (data.get('postId', null) == null || (data.get('postId', null) is string && data.get('postId', null).size() <= 128))
+        && (data.get('roomId', null) == null || (data.get('roomId', null) is string && data.get('roomId', null).size() <= 128));
+    }
+
+    function isValidFollow(data) {
+      return data.get('followId', null) is string
+        && data.get('followId', null).size() <= 256
+        && data.get('followerId', null) is string
+        && data.get('followerId', null).size() <= 128
+        && data.get('followerUsername', null) is string
+        && data.get('followerUsername', null).size() <= 100
+        && data.get('followerDisplayName', null) is string
+        && data.get('followerDisplayName', null).size() <= 100
+        && (data.get('followerPhotoURL', null) == null || (data.get('followerPhotoURL', null) is string && data.get('followerPhotoURL', null).size() <= 2048))
+        && data.get('followingId', null) is string
+        && data.get('followingId', null).size() <= 128
+        && data.get('followingUsername', null) is string
+        && data.get('followingUsername', null).size() <= 100
+        && data.get('followingDisplayName', null) is string
+        && data.get('followingDisplayName', null).size() <= 100
+        && (data.get('followingPhotoURL', null) == null || (data.get('followingPhotoURL', null) is string && data.get('followingPhotoURL', null).size() <= 2048))
+        && (data.get('status', null) == 'pending' || data.get('status', null) == 'accepted')
+        && data.get('createdAt', null) is string
+        && data.get('createdAt', null).size() <= 50;
+    }
+
+    match /users/{userId} {
+      allow get, list: if true;
+      
+      allow create: if isOwner(userId)
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && (
+          incoming().get('role', 'member') == 'member' || 
+          (
+            incoming().get('role', 'member') == 'admin' && 
+            (
+              request.auth.token.email == 'opencomm2026@gmail.com' ||
+              request.auth.token.get('email', '') == 'opencomm2026@gmail.com' ||
+              incoming().get('email', '') == 'opencomm2026@gmail.com'
+            )
+          )
+        )
+        && incoming().get('uid', '') == userId;
+        
+      allow update: if (
+        (isOwner(userId)
+          && isValidId(userId)
+          && isValidUser(incoming())
+          && (
+            incoming().get('role', 'member') == existing().get('role', 'member') ||
+            (incoming().get('role', 'member') == 'admin' && (request.auth.token.email == 'opencomm2026@gmail.com' || request.auth.token.get('email', '') == 'opencomm2026@gmail.com'))
+          )
+          && incoming().get('uid', '') == existing().get('uid', '') // immutable uid
+          && incoming().get('createdAt', '') == existing().get('createdAt', '') // immutable createdAt
+        ) || isAdmin()
+      );
+        
+      allow delete: if isOwner(userId) || isAdmin();
+
+      match /savedPosts/{postId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /savedCollections/{collectionId} {
+        allow read, write: if isOwner(userId);
+
+        match /posts/{postId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn() && (incoming().get('userId', null) == request.auth.uid || incoming().get('uid', null) == request.auth.uid);
+      allow update: if isSignedIn() && (
+        existing().get('userId', null) == request.auth.uid || 
+        existing().get('uid', null) == request.auth.uid || 
+        (
+          (incoming().get('caption', null) == existing().get('caption', null) || incoming().get('text', null) == existing().get('text', null)) && 
+          incoming().get('imageUrl', null) == existing().get('imageUrl', null) && 
+          (incoming().get('userId', null) == existing().get('userId', null) || incoming().get('uid', null) == existing().get('uid', null))
+        )
+      );
+      allow delete: if isSignedIn() && (existing().get('userId', null) == request.auth.uid || existing().get('uid', null) == request.auth.uid || isAdmin());
+
+      match /likes/{userId} {
+        allow read: if true;
+        allow write: if isOwner(userId);
+      }
+    }
+
+    match /reports/{reportId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /images/{imageId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && (
+        request.resource.data.ownerUid == request.auth.uid || 
+        request.resource.data.userId == request.auth.uid
+      );
+      allow delete: if isSignedIn() && (
+        resource.data.ownerUid == request.auth.uid || 
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+    }
+
+    match /notifications/{notificationId} {
+      allow get, list: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      allow create: if isSignedIn() 
+        && isValidId(notificationId)
+        && isValidNotification(incoming())
+        && incoming().senderId == request.auth.uid;
+      allow update: if isSignedIn()
+        && isValidId(notificationId)
+        && resource.data.recipientId == request.auth.uid
+        && incoming().recipientId == existing().recipientId
+        && incoming().senderId == existing().senderId
+        && incoming().type == existing().type
+        && incoming().message == existing().message
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly(['isRead']);
+      allow delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+    }
+
+    match /follows/{followId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && isValidId(followId)
+        && isValidFollow(incoming())
+        && incoming().followerId == request.auth.uid;
+      allow update: if isSignedIn()
+        && isValidId(followId)
+        && isValidFollow(incoming())
+        && (
+          (resource.data.followingId == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['status']))
+        );
+      allow delete: if isSignedIn()
+        && isValidId(followId)
+        && (resource.data.followerId == request.auth.uid || resource.data.followingId == request.auth.uid);
+    }
+
+    match /rooms/{roomId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && incoming().createdBy == request.auth.uid;
+      allow update: if isSignedIn() && (existing().createdBy == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (existing().createdBy == request.auth.uid || isAdmin());
+
+      match /members/{memberId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn();
+      }
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+        allow update, delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      }
+    }
+
+    match /roomInvites/{inviteId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && incoming().inviterId == request.auth.uid;
+      allow update: if isSignedIn() && (incoming().inviteeId == request.auth.uid || incoming().inviterId == request.auth.uid);
+      allow delete: if isSignedIn() && (existing().inviteeId == request.auth.uid || existing().inviterId == request.auth.uid);
+    }
+
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        existing().userId == request.auth.uid || 
+        isAdmin() ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['likedBy', 'likesCount']))
+      );
+      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+    }
+
+    match /replies/{replyId} {
+      allow read: if true;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        existing().userId == request.auth.uid || 
+        isAdmin() ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['likedBy', 'likesCount']))
+      );
+      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+    }
+
+    match /conversations/{conversationId} {
+      allow read, write: if isSignedIn() && (
+        request.auth.uid in resource.data.participants ||
+        request.auth.uid in request.resource.data.participants
+      );
+    }
+
+    match /messages/{conversationId} {
+      allow read, write: if isSignedIn();
+      match /messages/{messageId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    match /system_settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /admin_activity_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /presence/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    match /typing/{chatId} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}
