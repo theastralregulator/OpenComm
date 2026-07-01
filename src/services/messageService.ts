@@ -285,7 +285,7 @@ export async function getPeerSelectionLists(currentUserId: string): Promise<{
  * Uses deterministic ID ([userAId, userBId].sort().join('_')) to guarantee 
  * exactly one conversation per pair, regardless of who initiates.
  */
-export async function getOrCreateChat(userAId: string, userBId: string): Promise<string> {
+export async function getOrCreateChat(userAId: string, userBId: string, isFollowing: boolean = true): Promise<string> {
   const chatId = [userAId, userBId].sort().join('_');
   const now = new Date().toISOString();
 
@@ -320,7 +320,7 @@ export async function getOrCreateChat(userAId: string, userBId: string): Promise
         deletedBy: [],
         pinnedBy: [],
         archivedBy: [],
-        status: 'active',  // Always active — no message-request gate blocking chat
+        status: isFollowing ? 'active' : 'request',
         senderId: userAId,
         recipientId: userBId
       };
@@ -356,7 +356,7 @@ export async function getOrCreateChat(userAId: string, userBId: string): Promise
     updatedAt: now,
     lastMessage: null,
     unreadCount: { [userAId]: 0, [userBId]: 0 },
-    status: 'active'
+    status: isFollowing ? 'active' : 'request'
   };
   chats.push(newChat);
   localStorage.setItem('opencomm_mock_direct_chats', JSON.stringify(chats));
@@ -601,41 +601,49 @@ export async function sendDirectMessage(
       await setDoc(doc(db, 'messages', chatId, 'messages', messageId), newMessage);
 
       // 2. Update chat metadata and increment unread count
-      const chatRef = doc(db, CONVERSATIONS_COLLECTION, chatId);
-      const chatSnap = await getDoc(chatRef);
+      try {
+        const chatRef = doc(db, CONVERSATIONS_COLLECTION, chatId);
+        const chatSnap = await getDoc(chatRef);
 
-      if (chatSnap.exists()) {
-        const chatData = chatSnap.data() as DirectChat;
-        const deletedBy = chatData.deletedBy || [];
-        const unreadCount = chatData.unreadCount || {};
-        const nextDeletedBy = deletedBy.filter((id) => id !== sender.uid && id !== recipientId);
-        const recipientUnread = (unreadCount[recipientId] || 0) + 1;
+        if (chatSnap.exists()) {
+          const chatData = chatSnap.data() as DirectChat;
+          const deletedBy = chatData.deletedBy || [];
+          const unreadCount = chatData.unreadCount || {};
+          const nextDeletedBy = deletedBy.filter((id) => id !== sender.uid && id !== recipientId);
+          const recipientUnread = (unreadCount[recipientId] || 0) + 1;
 
-        await updateDoc(chatRef, {
-          updatedAt: now,
-          lastMessage: {
-            text: text || (attachment ? `Sent an ${attachment.type}` : ''),
-            senderId: sender.uid,
-            createdAt: now
-          },
-          [`unreadCount.${recipientId}`]: recipientUnread,
-          deletedBy: nextDeletedBy
-        });
+          await updateDoc(chatRef, {
+            updatedAt: now,
+            lastMessage: {
+              text: text || (attachment ? `Sent an ${attachment.type}` : ''),
+              senderId: sender.uid,
+              createdAt: now
+            },
+            [`unreadCount.${recipientId}`]: recipientUnread,
+            deletedBy: nextDeletedBy
+          });
+        }
+      } catch (metaError) {
+        console.warn('[OpenComm] Non-critical error updating chat metadata:', metaError);
       }
 
       // 3. Create Real Notifications
-      const safePhotoURL = (url?: string) =>
-        !url || url.startsWith('data:') ? '' : url.slice(0, 2048);
-        
-      await createNotification({
-        recipientId,
-        senderId: sender.uid,
-        senderName: sender.displayName || sender.username || 'Peer',
-        senderPhotoURL: safePhotoURL(sender.photoURL),
-        type: 'message',
-        message: replyTo ? `replied to your message: "${text}"` : `sent you a message: "${text || 'attachment'}"`,
-        link: `/messages/${chatId}`
-      });
+      try {
+        const safePhotoURL = (url?: string) =>
+          !url || url.startsWith('data:') ? '' : url.slice(0, 2048);
+          
+        await createNotification({
+          recipientId,
+          senderId: sender.uid,
+          senderName: sender.displayName || sender.username || 'Peer',
+          senderPhotoURL: safePhotoURL(sender.photoURL),
+          type: 'message',
+          message: replyTo ? `replied to your message: "${text}"` : `sent you a message: "${text || 'attachment'}"`,
+          link: `/messages/${chatId}`
+        });
+      } catch (notifError) {
+        console.warn('[OpenComm] Non-critical error creating notification:', notifError);
+      }
     } catch (error) {
       console.error('[OpenComm] Error sending message:', error);
       throw new Error('Unable to send message.');

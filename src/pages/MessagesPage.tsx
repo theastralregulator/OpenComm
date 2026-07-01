@@ -41,7 +41,8 @@ import {
   Forward,
   Lock,
   Globe,
-  Sparkles
+  Sparkles,
+  BadgeCheck
 } from 'lucide-react';
 
 import { useAuth } from '../contexts/AuthContext';
@@ -277,7 +278,8 @@ export const MessagesPage: React.FC = () => {
               setActivePeer(profile);
               setUserProfileCache(prev => ({ ...prev, [otherId]: profile }));
               // Ensure chat document exists (creates if not) — never throws
-              await getOrCreateChat(currentUser.uid, otherId);
+              const isFollowing = await getFollowStatus(currentUser.uid, otherId);
+              await getOrCreateChat(currentUser.uid, otherId, isFollowing === 'accepted');
               // Immediately try to hydrate activeChat from Firestore
               try {
                 const fetchedChat = await getChat(chatId);
@@ -444,7 +446,8 @@ export const MessagesPage: React.FC = () => {
   // Create or select direct message conversation
   const handleStartChat = async (peer: UserProfile) => {
     if (!currentUser) return;
-    const id = await getOrCreateChat(currentUser.uid, peer.uid);
+    const isFollowing = await getFollowStatus(currentUser.uid, peer.uid);
+    const id = await getOrCreateChat(currentUser.uid, peer.uid, isFollowing === 'accepted');
     setIsNewChatOpen(false);
     setUserSearchTerm('');
     setUserSearchResults([]);
@@ -688,7 +691,6 @@ export const MessagesPage: React.FC = () => {
     try {
       await acceptMessageRequest(chatId, currentUser.uid);
       setActiveChat(prev => prev ? { ...prev, status: 'active' } : null);
-      showToast.success('Request accepted! Chat is now in your active inbox.');
     } catch (e) {
       console.error(e);
     }
@@ -696,11 +698,9 @@ export const MessagesPage: React.FC = () => {
 
   const handleDeclineRequest = async () => {
     if (!chatId || !currentUser) return;
-    if (!window.confirm('Are you sure you want to decline and delete this message request?')) return;
     try {
       await declineMessageRequest(chatId, currentUser.uid);
       navigate('/messages');
-      showToast.info('Request declined.');
     } catch (e) {
       console.error(e);
     }
@@ -708,12 +708,10 @@ export const MessagesPage: React.FC = () => {
 
   const handleBlockRequest = async () => {
     if (!activePeer || !currentUser || !chatId) return;
-    if (!window.confirm(`Are you sure you want to block @${activePeer.username}?`)) return;
     try {
       await blockUser(currentUser.uid, activePeer.uid);
       await declineMessageRequest(chatId, currentUser.uid);
       navigate('/messages');
-      showToast.success(`@${activePeer.username} has been blocked.`);
     } catch (e) {
       console.error(e);
     }
@@ -721,14 +719,13 @@ export const MessagesPage: React.FC = () => {
 
   const handleReportRequest = async () => {
     if (!activePeer || !currentUser || !chatId) return;
-    const reason = window.prompt('Specify reason for reporting this conversation:');
-    if (reason === null) return;
+    // Removing window.prompt as per user request to eliminate alert() style popups
+    const reason = 'Inappropriate messaging request';
     try {
-      await reportUser(activePeer.uid, currentUser.uid, reason || 'Inappropriate messaging request');
+      await reportUser(activePeer.uid, currentUser.uid, reason);
       await blockUser(currentUser.uid, activePeer.uid);
       await declineMessageRequest(chatId, currentUser.uid);
       navigate('/messages');
-      showToast.success('User reported and blocked.');
     } catch (e) {
       console.error(e);
     }
@@ -741,7 +738,6 @@ export const MessagesPage: React.FC = () => {
     try {
       await pinChat(chatId, currentUser.uid, !isPinned);
       setIsMoreMenuOpen(false);
-      showToast.success(isPinned ? 'Chat unpinned.' : 'Chat pinned.');
     } catch (e) {
       console.error(e);
     }
@@ -753,7 +749,6 @@ export const MessagesPage: React.FC = () => {
     try {
       await archiveChat(chatId, currentUser.uid, !isArchived);
       setIsMoreMenuOpen(false);
-      showToast.success(isArchived ? 'Chat restored from archive.' : 'Chat archived.');
     } catch (e) {
       console.error(e);
     }
@@ -761,12 +756,10 @@ export const MessagesPage: React.FC = () => {
 
   const handleDeleteConversation = async () => {
     if (!chatId || !currentUser) return;
-    if (!window.confirm('Delete conversation? This hides it from your inbox but preserves history for the peer.')) return;
     try {
       await deleteChat(chatId, currentUser.uid);
       setIsMoreMenuOpen(false);
       navigate('/messages');
-      showToast.success('Conversation removed.');
     } catch (e) {
       console.error(e);
     }
@@ -783,7 +776,7 @@ export const MessagesPage: React.FC = () => {
 
     // Filter out requests and archives from 'all' inbox
     if (activeTab === 'all') {
-      return c.status === 'active' && !isArchived;
+      return !isRequest && !isArchived;
     }
     if (activeTab === 'unread') {
       return unreadCount > 0 && !isArchived;
@@ -822,6 +815,11 @@ export const MessagesPage: React.FC = () => {
       username.toLowerCase().includes(queryStr) ||
       lastMsgText.toLowerCase().includes(queryStr)
     );
+  }).sort((a, b) => {
+    if (!currentUser) return 0;
+    const aPinned = a.pinnedBy?.includes(currentUser.uid) ? 1 : 0;
+    const bPinned = b.pinnedBy?.includes(currentUser.uid) ? 1 : 0;
+    return bPinned - aPinned; // Pinned chats come first, remaining keep the updatedAt order from listenToChats
   });
 
   // Calculate unread & requests count to show inside category badge
@@ -999,6 +997,9 @@ export const MessagesPage: React.FC = () => {
                             <span className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
                               {displayName}
                             </span>
+                            {peerProfile?.isVerified && (
+                              <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/20 shrink-0" />
+                            )}
                             {isPinned && (
                               <Pin className="h-3 w-3 text-indigo-500 fill-indigo-500/30 rotate-45 shrink-0" />
                             )}
