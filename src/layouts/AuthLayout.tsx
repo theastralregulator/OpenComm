@@ -63,8 +63,8 @@ export const AuthLayout: React.FC = () => {
     { name: 'Explore', path: '/explore', icon: <Compass className="h-5 w-5" /> },
     { name: 'Rooms', path: '/rooms', icon: <Users className="h-5 w-5" /> },
     { name: 'Messages', path: '/messages', icon: <Mail className="h-5 w-5" /> },
-    { name: 'Notifications', path: '/notifications', icon: <Bell className="h-5 w-5" />, badge: unreadCount > 0 ? unreadCount : undefined },
     { name: 'Profile', path: `/profile/${username}`, icon: <User className="h-5 w-5" /> },
+    { name: 'Notifications', path: '/notifications', icon: <Bell className="h-5 w-5" />, badge: unreadCount > 0 ? unreadCount : undefined },
     { name: 'Settings', path: '/settings', icon: <Settings className="h-5 w-5" /> },
   ];
 
@@ -228,7 +228,7 @@ export const AuthLayout: React.FC = () => {
             
             {/* Mobile-Only Logo */}
             <NavLink to="/feed" className="flex lg:hidden hover:opacity-95 transition-opacity">
-              <OpenCommLogo iconSize={36} />
+              <img src="/favicon.png" alt="OpenComm Logo" className="w-9 h-9 object-contain" />
             </NavLink>
           </div>
 
