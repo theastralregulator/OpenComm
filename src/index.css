@@ -84,14 +84,7 @@
     --viewport-height: 100vh;
   }
 
-  /* Custom Visual Viewport Height Utilities */
-  @utility h-visual-screen {
-    height: calc(var(--vh, 1vh) * 100);
-  }
 
-  @utility min-h-visual-screen {
-    min-height: calc(var(--vh, 1vh) * 100);
-  }
 
   /* Hide bottom nav when keyboard is open to maximize screen space */
   :root.keyboard-open .mobile-bottom-nav {
@@ -115,6 +108,15 @@
     outline: 2px solid var(--color-primary-purple);
     outline-offset: 2px;
   }
+}
+
+/* Custom Visual Viewport Height Utilities */
+@utility h-visual-screen {
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+@utility min-h-visual-screen {
+  min-height: calc(var(--vh, 1vh) * 100);
 }
 
 /* Typography Token Utilities */
